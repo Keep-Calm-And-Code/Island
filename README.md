@@ -10,4 +10,4 @@ TextWindow.hx supports displaying colored characters via ANSI escape codes and J
 
 2) The game itself. Build stuff on a hex-grid island which produce stuff so you can build more stuff.
 
-My main aim of this project is to try to improve how I go about writing code. In particular, I'm putting this on GitHub to get in the habit of version control and to share it with other people.
+I'm a hobby coder. My main aim of this project is to try to improve how I go about writing code. In particular, I'm putting this on GitHub to get in the habit of version control and to share it with other people.
