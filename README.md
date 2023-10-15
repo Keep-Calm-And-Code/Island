@@ -1,4 +1,4 @@
-This repo was created for Timasomo 2023, a month long event where the tildes.net community makes stuff.
+This repo was created for TiMaSoMo 2023, a month long event where the tildes.net community makes stuff.
 
 I'm making a simple economic strategy game where you develop an island. Don't have all the rules planned out, will see where design and development takes me.
 
