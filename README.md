@@ -6,7 +6,7 @@ This is written in Haxe. Text-only output, keyboard-only input to keep things co
 
 1) A text-windowing module (TextWindow.hx), this is an old personal project that treats the text console as rectangular regions (windows) within rectangular regions, which can then be e.g. moved around, made invisible. This lets me more comfortably render text in specific places rather than simply line-by-line.
 
-TextWindow.hx supports displaying colored characters via ANSI escape codes and Jason Hood's ANSICON (https://github.com/adoxa/ansicon). This won't be used for this game.
+TextWindow.hx supports displaying colored characters via Jason Hood's ANSICON (https://github.com/adoxa/ansicon). This won't be used for this game.
 
 2) The game itself. Build stuff on a hex-grid island which produce stuff so you can build more stuff.
 
