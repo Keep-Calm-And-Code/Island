@@ -37,7 +37,7 @@ import hl.UI.Window;
 	public var buildings:Map<Building, UInt>;
 	
 	
-	public function new(size, ?name:String) {
+	public function new(size, type:GenerationType, ?name:String) {
 		
 		this.mainWindow = new TextScreen(24);
 		
@@ -52,26 +52,65 @@ import hl.UI.Window;
 		resources.add(Food, 5);
 		resources.add(Wood, 5);
 		
-		this.grid = generate();
+		switch (type) {
+			case Empty:
+				generateEmpty();
+			case OneCell:
+				generateOneCell();
+			case Filled:
+				generateFilled();
+			case Random:
+				generateRandom();
+		}
+		
 		countBuildings();
 		
 		mainWindow.addChild(grid.window, 5);
 		
 		infoWindow = new TextWindow(2, "info");
-		mainWindow.addChild(infoWindow, 19);
+		mainWindow.addChild(infoWindow, 5, 40);
 		
 		commandWindow = new TextWindow(20, "command");
-		mainWindow.addChild(commandWindow, 5, 40);
+		mainWindow.addChild(commandWindow, 8, 40);
 	}
 	
-	public function generate() {
-		return generateBasic();
-	}
-	
-	public function generateBasic() {
-		//placeholder island
+	public function randomTerrain() {
+		var roll = Math.random();
 		
-		var grid = new HexGrid(size, size, cellRows, cellCols, name);
+		if (roll < 0.4) {
+			return Terrain.Grass;
+		}
+		else if (roll < 0.7) {
+			return Terrain.Forest;
+		}
+		else {
+			return Terrain.Hills;
+		}
+	}
+	
+	
+	public function makeCell(x:Int, y:Int, ?terrain) {
+		if (terrain == null) terrain = randomTerrain();
+		
+		var cell = new IslandCell(terrain, grid.toCellKey(x, y));
+		cell.render();
+		grid.addCell(cell, x, y);
+	}
+	
+	public function generateEmpty() {
+		grid = new HexGrid(size, size, cellRows, cellCols, name);
+	}
+	
+	public function generateOneCell() {
+		grid = new HexGrid(size, size, cellRows, cellCols, name);
+		makeCell(Math.floor(size / 2), Math.floor(size / 2));
+	}
+	
+	public function generateFilled() {
+		
+		//placeholder island		
+		grid = new HexGrid(size, size, cellRows, cellCols, name);
+		
 		for (r in 0...size) {
 			for (c in 0...size) {
 				var terrain = Terrain.Grass;
@@ -83,15 +122,13 @@ import hl.UI.Window;
 					case 2:
 						terrain = Terrain.Hills;		
 				}
-				var cell = new IslandCell(cellRows, cellCols, terrain, Point2D.coordsToString(c, r));
-				cell.render();
+				
+				var cell = new IslandCell(terrain, grid.toCellKey(c, r));
 				grid.addCell(cell, c, r);
 			}
 		}
 	
-		grid.removeCell(2, 3);
-		grid.removeCell(3, 4);
-		
+		//assumes size >= 3. This function should be used only for testing anyways
 		cast(grid.cells["1, 2"], Island.IslandCell).building = Building.House;
 		cast(grid.cells["1, 2"], Island.IslandCell).buildingLevel = 2;
 		cast(grid.cells["2, 2"], Island.IslandCell).building = Building.Sawmill;
@@ -99,7 +136,11 @@ import hl.UI.Window;
 		cast(grid.cells["2, 1"], Island.IslandCell).building = Building.Farm;
 		cast(grid.cells["2, 1"], Island.IslandCell).buildingLevel = 1;	
 		
-		return grid;
+	}
+	
+	
+	//makes a new Cell adjacent to the coast
+	public function growIsland() {
 		
 	}
 	
@@ -108,14 +149,36 @@ import hl.UI.Window;
 		var gridRows = Math.floor(semiperimeter / 2);
 		var gridCols = semiperimeter - gridRows;
 	
-		var grid = new HexGrid(gridRows, gridCols, cellRows, cellCols, name);
-		
-		for (i in (2...size)) {
+		grid = new HexGrid(gridRows, gridCols, cellRows, cellCols, name);
 
+		var x = Math.floor(gridCols / 2);	var y = Math.floor(gridRows / 2);
+		makeCell(x, y);
+		grid.activeCellKey = grid.toCellKey(x, y);
+		getActiveCell().building = Building.House;
+		getActiveCell().buildingLevel = 2;
+		
+		for (i in (1...size)) {
+			
+			//coast is recalculated each time, instead of gradually being updated. 
+			//just not worthwhile to do something smarter now, island generator is currently a naive placeholder anyways			
+			@INEFFICIENT 	
+			var coastKey = Utils.randomElement(coastCellKeys());
+			var key = Utils.randomElement(grid.potentialNeighbors(coastKey));
+			
+			makeCell(grid.toCellX(key), grid.toCellY(key));
+			
+			switch (i) {
+				case 1:
+					cast(grid.cells[key], IslandCell).building = Building.Farm;
+					cast(grid.cells[key], IslandCell).buildingLevel = 1;
+				case 2:
+					cast(grid.cells[key], IslandCell).building = Building.Sawmill;
+					cast(grid.cells[key], IslandCell).buildingLevel = 1;	
+				default:
+			}
 			
 		}
 		
-		return grid;
 	}	
 	
 	private inline function write(s:String, ?r:Int = 0, ?c:Int = 0) {
@@ -156,8 +219,21 @@ import hl.UI.Window;
 		return Building.CostToBuild(b, 0);		
 	}
 	
+	public function coastCellKeys() {
+		
+		var coast = [];
+		
+		for (c in grid.cells.keys()) {
+			if (grid.potentialNeighbors(c).length > 0) {
+				coast.push(c);
+			}
+		}
+		
+		return coast;
+	}
+	
 	public function display() {
-		write('Year $turn', 0, 20);
+		write('Week $turn', 0, 20);
 		
 		write('Islanders: $population', 2);
 		write('$resources', 2, 18);
@@ -170,6 +246,7 @@ import hl.UI.Window;
 		infoWindow.clear();
 		if (active != null) {
 			var cell = cast(grid.cells[active], IslandCell);
+			
 			infoWindow.write(terrainNames[cell.terrain]);
 			
 			if (cell.building == null) {
@@ -177,7 +254,7 @@ import hl.UI.Window;
 			}
 			if (cell.building != null) {
 				menuState = MenuState.Upgrade;
-				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 0, 12);
+				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
 			}
 		}
 		
@@ -206,7 +283,7 @@ import hl.UI.Window;
 				commandWindow.write("U)pgrade");
 		}
 		
-		commandWindow.write("N)ext year", 14);
+		commandWindow.write("N)ext week", 11);
 		
 		mainWindow.display();
 	}
@@ -234,7 +311,7 @@ import hl.UI.Window;
 				case 's' | 'S':
 					commandBuild(Building.Sawmill);
 				case 'n' | 'N':	//next turn
-					commandNextYear();
+					commandNextTurn();
 				case 'u' | 'U':	//upgrade
 					commandUpgrade();
 				default:
@@ -277,12 +354,17 @@ import hl.UI.Window;
 			getActiveCell().buildingLevel = 1;
 			buildings[b]++;
 	
-			commandNextYear();
+			commandNextTurn();
 		}
 	}
+	
+	public function growPopulation() {
+		if (population < buildings[Building.House] * 3) population++;
+	}
 		
-	public function commandNextYear() {
+	public function commandNextTurn() {
 		resources.addPile(countIncome());
+		growPopulation();
 		turn++;
 	}
 	
@@ -294,30 +376,24 @@ import hl.UI.Window;
 			getActiveCell().buildingLevel++;
 			buildings[getActiveCell().building]++;
 	
-			commandNextYear();
+			commandNextTurn();
 		}
 	}
  
- }
+}
+ 
+enum GenerationType {
+	Empty;
+	OneCell;
+	Filled;
+	Random;
+}
 	
 enum MenuState {
 	Empty;
 	Build;
 	Upgrade;
 }
-
-enum Commands {
-	MoveLeft;
-	MoveRight;
-	MoveUp;
-	MoveDown;
-	BuildHouse;
-	BuildFarm;
-	BuildSawmill;
-	Upgrade;
-	NextTurn;
-}
-
 
 
 class IslandCell extends Grid.Cell {
@@ -327,13 +403,15 @@ class IslandCell extends Grid.Cell {
 	public var building:Building;
 	public var buildingLevel:UInt;
 	
-	public function new(rows:UInt, columns:UInt, ?terrain = Terrain.Forest, ?name:String) {
+	public function new(?terrain = Terrain.Forest, ?name:String) {
 		
-		super(rows, columns, name);
+		super(Island.cellRows, Island.cellCols, name);
 		
 		this.terrain = terrain;
 		
 		defaultChar = terrainChars[terrain];
+		
+		render();
 	}
 
 	
@@ -342,8 +420,8 @@ class IslandCell extends Grid.Cell {
 		clear();
 		
 		if (building != null) {
-			write(Building.names[building].charAt(0));
-			writeLeft("" + buildingLevel, 0, columns - 1);
+			write(Building.names[building].charAt(0), 0, 1);
+			writeLeft("" + buildingLevel, 1, columns - 2);
 		}
 		
 	}

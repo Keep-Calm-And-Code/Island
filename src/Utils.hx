@@ -30,7 +30,7 @@ class Utils {
 	static public function randomElement(a:Array<Dynamic>) {
 		if (a.length == 0) return null;
 		
-		return(a[randomInt(0, a.length)]);
+		return(a[randomInt(0, a.length - 1)]);
 	}
 	
 

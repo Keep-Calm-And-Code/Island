@@ -28,9 +28,8 @@ class Grid {
 	}
 	
 	
-	//this does not mesh well with the overloaded definition in the inherited class HexGrid. FIX!
-	public overload extern inline function addCell(cell:Cell, ?label:String) {
-		
+	public function addCellWithoutAdjacency(cell:Cell, ?label:String) {
+
 		if (label == null) label = cell.name;
 		//removeCell(label);	Cannot force inline-call to removeCell because it is overridden
 		if (cells.exists(label)) {		//hence have to make the code explicit
@@ -45,10 +44,39 @@ class Grid {
 	
 	public overload extern inline function removeCell(label:String) {
 		if (cells.exists(label)) {
+			for (n in cells[label].neighbors) {
+				cells[n].neighbors.remove(label);
+			}
 			cells[label].grid = null;
 			cells.remove(label);
 			size--;
 		}
+	}
+	
+	public overload extern inline function makeAdjacent(key1:String, key2:String) {
+		if (cells.exists(key1) && cells.exists(key2)) {
+			if (!cells[key1].neighbors.contains(key2)) cells[key1].neighbors.push(key2);
+			if (!cells[key2].neighbors.contains(key1)) cells[key2].neighbors.push(key1);
+		}
+	}
+	
+	public overload extern inline function makeAdjacent(key:String, neighborKeys:Array<String>) {
+		for (n in neighborKeys) {
+			makeAdjacent(key, n);
+		}
+	}
+	
+	public overload extern inline function breakAdjacent(key1:String, key2:String) {
+		if (cells.exists(key1) && cells.exists(key2)) {
+			cells[key1].neighbors.remove(key2);
+			cells[key2].neighbors.remove(key1);
+		}
+	}
+	
+	public overload extern inline function breakAdjacent(key:String, neighborKeys:Array<String>) {
+		for (n in neighborKeys) {
+			breakAdjacent(key, n);
+		}		
 	}
 	
 	//meant to be overridden in inherited classes
@@ -163,7 +191,14 @@ class HexGrid extends Grid
 	public overload extern inline function addCell(cell:Cell, x:Int, y:Int) {
 
 		cell.name = toCellKey(x, y);
-		addCell(cell, cell.name);
+		addCellWithoutAdjacency(cell, cell.name);
+		
+		for (k in [ toCellKey(x, y - 1), toCellKey(x + 1, y - 1),	//all 6 potential neighboring hexes
+					toCellKey(x - 1, y), toCellKey(x + 1, y),
+					toCellKey(x - 1, y + 1), toCellKey(x, y + 1) ]) {
+			makeAdjacent(cell.name, k);
+		}
+						
 		window.addChild(cell, getRowFromCoords(x, y), getColumnFromCoords(x, y));
 	}
 	
@@ -204,7 +239,10 @@ class HexGrid extends Grid
 		var dx = toCellX(to) - toCellX(from);
 		var dy = toCellY(to) - toCellY(from);
 		
-		return dx * dx + dy * dy + dx * dy;
+		return (dx + dy) * (dx + dy) - dx * dy;
+		//The above is equal to dx * dx + dy * dy + dx * dy, 
+		//which is the cosine rule applied to 120 deg.
+		//Faster because of one fewer multiplication
 	}
 	
 	
@@ -311,42 +349,22 @@ class HexGrid extends Grid
 		return closestCellInDirection(p, Direction.Down);
 	}
 	
-	//returns array of neighboring cells
-	public function neighbors(key:String) {		
-		
-		if (cells.exists(key) && isValidPoint(key)) {
-		
-			var neighbors = [];
-			
-			var x = toCellX(key);	var y = toCellY(key);
-			
-			for (k in [ toCellKey(x, y - 1), toCellKey(x + 1, y - 1),	//all 6 potential neighboring hexes
-						toCellKey(x - 1, y), toCellKey(x + 1, y),
-						toCellKey(x - 1, y + 1), toCellKey(x, y + 1) ])
-			
-				if (cells.exists(k)) neighbors.push(k);
-			
-			return neighbors;
-		}
-		
-		return null;	//should I return null or an empty array?
-	}
 	
-	//returns array of cell keys that could be neighbors but aren't yet (aren't in cells.keys())
+	//returns array of cell keys that could be neighbors but a
 	public function potentialNeighbors(key:String) {
-		if (cells.exists(key) && isValidPoint(key)) {
+		if (isValidPoint(key)) {
 		
 			var neighbors = [];
 			
 			var x = toCellX(key);	var y = toCellY(key);
 			
-			for (k in [ toCellKey(x, y - 1), toCellKey(x + 1, y - 1),	//all 6 potential neighboring hexes
+			for (n in [ toCellKey(x, y - 1), toCellKey(x + 1, y - 1),	//all 6 potential neighboring hexes
 						toCellKey(x - 1, y), toCellKey(x + 1, y),
 						toCellKey(x - 1, y + 1), toCellKey(x, y + 1) ]) {
 			
 				//inefficient. Coords get converted to keys, but get converted back to coords in isValidPoint()
 				//but the the inefficiency is generally negligible and I can't think of a cleaner way to code it
-				if (isValidPoint(k) && !cells.exists(k)) neighbors.push(k);
+				if (isValidPoint(n) && !cells[key].neighbors.contains(n)) neighbors.push(n);
 			}
 				
 			return neighbors;
@@ -368,8 +386,11 @@ class Cell extends TextWindow
 {
 	public var grid:Grid;
 	
+	public var neighbors:Array<String>;
+	
 	public function new(rows:UInt, columns:UInt, ?name:String) {
 		super(rows, columns, name);
+		neighbors = [];
 		defaultChar = '.';
 		clear();
 	
