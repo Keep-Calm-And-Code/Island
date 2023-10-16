@@ -15,14 +15,12 @@ class Utils {
 	}
 	
 	static public function maxInt(a:Int, b:Int):Int {
-		if (a > b) { return a; }
-		else { return b; }
+		return a > b ? a : b;
 	}
 	
 	static public function minInt(a:Int, b:Int, ?c:Int):Int {
 		if (c == null) {
-			if (a < b) { return a; }
-			else { return b; }
+			return a < b ? a : b;
 		}
 		else return minInt(a, minInt(b, c));
 	}	
