@@ -210,6 +210,7 @@ import hl.UI.Window;
 		income.add(Resource.Grain, 10 * buildings[Building.Farm]);
 		income.add(Resource.Wood, 10 * buildings[Building.Sawmill]);
 		income.add(Resource.Metal, 10 * buildings[Building.Mine]);
+		income.add(Resource.Tools, 5 * buildings[Building.Blacksmith]);
 		
 		return income;
 	}
@@ -289,7 +290,7 @@ import hl.UI.Window;
 				
 				if (resources.hasPile(costToUpgrade())) commandWindow.write("*");
 				
-				commandWindow.write('$cost', 0, 12);
+				commandWindow.write(cost.toLeftAlignedString(), 0, 12);
 		}
 		
 		commandWindow.write("N)ext week", 11);
@@ -321,6 +322,8 @@ import hl.UI.Window;
 					commandBuild(Building.Sawmill);
 				case 'm' | 'M':
 					commandBuild(Building.Mine);
+				case 'b' | 'B':
+					commandBuild(Building.Blacksmith);
 				case 'n' | 'N' | ' ':	//next turn
 					commandNextTurn();
 				case 'u' | 'U':	//upgrade

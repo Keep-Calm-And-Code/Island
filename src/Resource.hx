@@ -9,13 +9,15 @@ enum Resource {
 	Grain;
 	Wood;
 	Metal;
+	Tools;
 }
 
 
 var names = [
 	Resource.Grain => "Grain",
 	Resource.Wood => "Wood",
-	Resource.Metal => "Metal"
+	Resource.Metal => "Metal",
+	Resource.Tools => "Tools"
 ];
 
 
