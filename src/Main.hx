@@ -12,9 +12,7 @@ class Main
 {
 	
 	static function main() 
-	{
-			
-		
+	{	
 		var test = new Island(14, Island.GenerationType.Random, "Test");
 		
 		test.display();

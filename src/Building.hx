@@ -21,7 +21,7 @@ var names = [
 
  
 //cost of the next building
-function CostToBuild(b:Building, n:Int) {  //current number of buildings)
+function CostToBuild(b:Building, n:Int) {  //n: current number of buildings)
 	
 	var cost = new Resource.Pile();
 	

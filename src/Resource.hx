@@ -22,16 +22,12 @@ class Pile {
 	
 	public var resources:Map<Resource, Int>;
 	
-	public function new(?newResources:Map<Resource, Int>) {
-		if (newResources == null) {
-			resources = [];
+	public function new(?resources:Map<Resource, Int>) {
+		if (resources == null) {
+			this.resources = [];
 		}
 		else {
-			for (value in newResources) {
-				if (value < 0) throw "Cannot have negative resources";
-			}
-			
-			resources = newResources;
+			this.resources = resources;
 		}
 	}
 	
@@ -89,34 +85,25 @@ class Pile {
 		return true;
 	}
 	
+	
 	public function add(r:Resource, n:Int) {
-		if (n < 0) throw "add() is only for increasing resources";
-		
-		if (resources.exists(r)) {
-			resources[r] += n;
-		}
-		else {
-			resources[r] = n;
-		}
+		if (resources.exists(r)) resources[r] += n;
+		else resources[r] = n;
 	}
 	
-	//will not subtract if there is less than n of the resource
+	//will not result in negative resources
+	public function cutoffAdd(r:Resource, n:Int) {
+		if (resources.exists(r)) resources[r] = Utils.maxInt(resources[r] + n, 0);
+		else resources[r] = Utils.maxInt(n, 0);
+	}
+	
 	public function subtract(r:Resource, n:Int) {
-		if (n < 0) throw "subtract() is only for decreasing resources";
-		if (!resources.exists(r)) throw "cannot subtract a resource not in the pile";
-		
-		if (resources[r] < n) throw "not enough resources to subtract";	//improve handling
-		
-		resources[r] -= n;
-		
+		add(r, -n);
 	}
 	
-	//always subtracts the resources, but will stop at 0
-	public function forceSubtract(r:Resource, n:Int) {
-		if (n < 0) throw "forceSubtract() is only for decreasing resources";
-		
-		if (resources.exists(r)) resources[r] = Utils.maxInt(resources[r] - n, 0);
-		
+	//will not result in negative resources
+	public function cutoffSubtract(r: Resource, n:Int) {
+		cutoffAdd(r, -n);
 	}
 	
 	public function addPile(p:Pile) {
@@ -125,17 +112,24 @@ class Pile {
 		}
 	}
 	
+	public function cutoffAddPile(p:Pile) {
+		for (r in p.resources.keys()) {
+			cutoffAdd(r, p.resources[r]);
+		}
+	}
+		
 	public function subtractPile(p:Pile) {
 		for (r in p.resources.keys()) {
-			this.subtract(r, p.resources[r]);
+			subtract(r, p.resources[r]);
 		}		
 	}
 	
-	public function forceSubtractPile(p:Pile) {
+	public function cutoffSubtractPile(p:Pile) {
 		for (r in p.resources.keys()) {
-			this.forceSubtract(r, p.resources[r]);
+			cutoffSubtract(r, p.resources[r]);
 		}		
 	}
+	
 }
 
 

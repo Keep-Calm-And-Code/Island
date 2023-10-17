@@ -155,7 +155,7 @@ import hl.UI.Window;
 		makeCell(x, y);
 		grid.activeCellKey = grid.toCellKey(x, y);
 		getActiveCell().building = Building.House;
-		getActiveCell().buildingLevel = 2;
+		getActiveCell().buildingLevel = 1;
 		
 		for (i in (1...size)) {
 			
@@ -270,7 +270,7 @@ import hl.UI.Window;
 					commandWindow.write(Building.names[b], row, 2);
 					commandWindow.write(Building.names[b].charAt(0) + ")", row, 1);
 					
-					var cost = Building.CostToBuild(b, buildings[b]);
+					var cost = costToBuild(b);
 					
 					if (resources.hasPile(cost)) commandWindow.write("*", row, 0);
 					
@@ -280,7 +280,13 @@ import hl.UI.Window;
 				}
 				
 			case Upgrade:
-				commandWindow.write("U)pgrade");
+				commandWindow.write(" U)pgrade");
+				
+				var cost = costToUpgrade();
+				
+				if (resources.hasPile(costToUpgrade())) commandWindow.write("*");
+				
+				commandWindow.write('$cost', 0, 12);
 		}
 		
 		commandWindow.write("N)ext week", 11);
