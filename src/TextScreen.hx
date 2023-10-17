@@ -38,18 +38,6 @@ class ColoredChar {
 }
 
 
-class WindowPosition {
-	
-	public var row:Int;
-	public var column:Int;
-	
-	public function new(row = 0, column = 0) {
-		this.row = row;
-		this.column = column;
-	}
-}
-
-
 class ChildWindowInfo {
 	
 	public var window:TextWindow;
@@ -113,7 +101,7 @@ class TextScreen {
 	}
 	
  
-	public function write(text:String, ?row = 0, ?column = 0, ?color:ANSIColor = null) {
+	public function write(text:String, ?color:ANSIColor = null, ?row = 0, ?column = 0) {
 
 		if ((row < 0) || (row >= rows)) throw "row outside of range";
 		if (column < 0) {
@@ -128,9 +116,9 @@ class TextScreen {
 		}
 	}
 	
-	public function writeLeft(text:String, ?rows = 0, ?column, ?color:ANSIColor = null) {
+	public function writeLeft(text:String, ?color:ANSIColor = null, ?rows = 0, ?column) {
 		if (column == null) column = columns - 1;
-		write(text, rows, column - text.length + 1, color);
+		write(text, color, rows, column - text.length + 1);
 	}
 	
 	
@@ -176,7 +164,7 @@ class TextScreen {
 	
 	public function render() {  //writes contents of child windows onto displayBuffer
 								//note that this overwrites anything you write onto the displayBuffer!
-								//subclasses of this class should implement a dataBuffer to write to							
+								//subclasses of this class should implement some kind of data buffer to write to							
 		var rowsToRender:Int;
 		var columnsToRender:Int;
 
@@ -264,23 +252,21 @@ class TextScreen {
 }
 
 
+
 class TextWindow extends TextScreen {
 	
 	public var name:String;
 	
-	public function new(?rows = 24, ?columns = 80, ?newName = "") {
-		name = newName;
-		super(rows, columns);
-	}
-
-}
-
-/*
-class TextWindow extends TextScreen {   
-	
+	//write data to this buffer first before copying to displaybuffer
+	//this contains all the data possessed the window can potentially display
+	//displayBuffer contains what is going to be displayed, which is gathered from
+	//this databuffer as well as that of child TextWindows
+	//
+	//I've yet to make full use of this separation
 	public var dataBuffer:Vector<Vector<ColoredChar>>;
 	
-	override public function new(?rows = 24, ?columns = 80) {
+	override public function new(?rows = 24, ?columns = 80, ?name = "") {
+		this.name = name;
 		dataBuffer = new Vector(rows);
 		for (i in 0...rows) {
 			dataBuffer[i] = new Vector<ColoredChar>(columns);
@@ -289,7 +275,7 @@ class TextWindow extends TextScreen {
 		super(rows, columns);
 	}
 	
-	override public function write(?row = 0, ?column = 0, text:String, ?color:ANSIColor = null) {
+	override public function write(text:String, ?color:ANSIColor = null, ?row = 0, ?column = 0) {
 
 		if (color == null) color = defaultTextColor;
 		for (i in 0...Math.round(Math.min(text.length, this.columns - column))) {  //this is stupid, how do I cast properly?
@@ -297,7 +283,10 @@ class TextWindow extends TextScreen {
 		}
 	}
 
-	override public function clear() {
+	override public function clear(?fill:String) {
+		if (fill == null) fill = defaultChar;
+		fill = fill.charAt(0);
+		
 		for (i in 0...rows) {
 			for (j in 0...columns) {
 				displayBuffer[i][j] = new ColoredChar(defaultChar, defaultTextColor);
@@ -318,33 +307,33 @@ class TextWindow extends TextScreen {
 
 	
 }
-*/
+
 
 class TextLog extends TextWindow {
 	
-	public var dataBuffer:List<String>;   //stores logged strings. Most recently logged string is last
+	public var stringBuffer:List<String>;   //stores logged strings. Most recently logged string is last
 	public var maxLength:Int;   //max number of strings to store in dataBuffer
 								//maxLength = 0 means no max
 								
 	public function new(rows = 24, columns = 80, length = 10) {
 		if (length < 1) throw "length must be a positive integer";
 		maxLength = length;
-		dataBuffer = new List<String>();
+		stringBuffer = new List<String>();
 		
 		super(rows, columns);
 	}
 	
 	public function log(string:String) {    //should I also override write()?
-		dataBuffer.add(string);
-		if (maxLength != 0 && dataBuffer.length > maxLength) {
-			dataBuffer.pop();
+		stringBuffer.add(string);
+		if (maxLength != 0 && stringBuffer.length > maxLength) {
+			stringBuffer.pop();
 		}
 	}
 	
 	override public function render() {   //doesn't support wordwrap. Improve!
-		var firstLineToRender = Utils.maxInt(dataBuffer.length - rows, 0);
+		var firstLineToRender = Utils.maxInt(stringBuffer.length - rows, 0);
 		var currentRow = 0;
-		for (line in dataBuffer) {
+		for (line in stringBuffer) {
 			if (currentRow >= firstLineToRender) {
 				write(line, currentRow);
 			}
@@ -354,7 +343,7 @@ class TextLog extends TextWindow {
 	}
 	
 	override public function clear(?fill) {
-		dataBuffer.clear();
+		stringBuffer.clear();
 		super.clear();
 	}
 	
