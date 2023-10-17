@@ -49,8 +49,9 @@ import hl.UI.Window;
 		population = 3;
 		
 		resources = new Pile();
-		resources.add(Food, 5);
-		resources.add(Wood, 5);
+		resources.add(Grain, 50);
+		resources.add(Wood, 50);
+		resources.add(Metal, 50);
 		
 		switch (type) {
 			case Empty:
@@ -203,10 +204,12 @@ import hl.UI.Window;
 	}
 	
 	public function countIncome() {
+		
 		var income = new Pile();
 		
-		income.add(Resource.Food, buildings[Building.Farm]);
-		income.add(Resource.Wood, buildings[Building.Sawmill]);
+		income.add(Resource.Grain, 10 * buildings[Building.Farm]);
+		income.add(Resource.Wood, 10 * buildings[Building.Sawmill]);
+		income.add(Resource.Metal, 10 * buildings[Building.Mine]);
 		
 		return income;
 	}
@@ -302,13 +305,13 @@ import hl.UI.Window;
 			trace(input);
 		
 			switch(input) {
-				case '4':	//left
+				case '4':
 					commandMoveLeft();
-				case '6':	//right
+				case '6':
 					commandMoveRight();
-				case '8':	//up
+				case '8':
 					commandMoveUp();
-				case '2':	//down
+				case '2':
 					commandMoveDown();
 				case 'h' | 'H':	
 					commandBuild(Building.House);
@@ -316,7 +319,9 @@ import hl.UI.Window;
 					commandBuild(Building.Farm);
 				case 's' | 'S':
 					commandBuild(Building.Sawmill);
-				case 'n' | 'N':	//next turn
+				case 'm' | 'M':
+					commandBuild(Building.Mine);
+				case 'n' | 'N' | ' ':	//next turn
 					commandNextTurn();
 				case 'u' | 'U':	//upgrade
 					commandUpgrade();

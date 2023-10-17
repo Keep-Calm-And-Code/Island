@@ -6,14 +6,16 @@ package;
  */
 
 enum Resource {
-	Food;
+	Grain;
 	Wood;
+	Metal;
 }
 
 
 var names = [
-	Resource.Food => "Food",
-	Resource.Wood => "Wood"
+	Resource.Grain => "Grain",
+	Resource.Wood => "Wood",
+	Resource.Metal => "Metal"
 ];
 
 
