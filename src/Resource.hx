@@ -80,6 +80,7 @@ class Pile {
 		return all;
 	}
 	
+
 	public function hasPile(p:Pile) {
 		for (r in p.resources.keys()) {
 			if (!resources.exists(r) || resources[r] < p.resources[r]) {
@@ -135,7 +136,6 @@ class Pile {
 	}
 	
 }
-
 
 
 

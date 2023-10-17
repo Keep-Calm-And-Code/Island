@@ -262,7 +262,7 @@ class TextWindow extends TextScreen {
 	//displayBuffer contains what is going to be displayed, which is gathered from
 	//this databuffer as well as that of child TextWindows
 	//
-	//I've yet to make full use of this separation
+	//I've yet to make full use of this separation.
 	public var dataBuffer:Vector<Vector<ColoredChar>>;
 	
 	override public function new(?rows = 24, ?columns = 80, ?name = "") {
@@ -297,12 +297,16 @@ class TextWindow extends TextScreen {
 	
 	//need to extend to allow change of display area. Remember ChildWindowOptions
 	override public function render() {
+		copyDataBuffer();
+		super.render();   //then writes child windows onto displayBuffer		
+	}
+	
+	public function copyDataBuffer() {
 		for (row in 0...rows) {
 			for (col in 0...columns) {
 				displayBuffer[row][col] = dataBuffer[row][col];   //copies dataBuffer onto displayBuffer
 			}
 		}
-		super.render();   //then writes child windows onto displayBuffer		
 	}
 
 	

@@ -3,7 +3,6 @@ package;
 import TextScreen;
 import Grid;
 import Resource;
-import hl.UI.Window;
 
 /**
  * ...
@@ -211,6 +210,8 @@ import hl.UI.Window;
 		income.add(Resource.Wood, 10 * buildings[Building.Sawmill]);
 		income.add(Resource.Metal, 10 * buildings[Building.Mine]);
 		income.add(Resource.Tools, 5 * buildings[Building.Blacksmith]);
+
+		income.add(Resource.Grain, -4 * population);
 		
 		return income;
 	}
@@ -324,9 +325,9 @@ import hl.UI.Window;
 					commandBuild(Building.Mine);
 				case 'b' | 'B':
 					commandBuild(Building.Blacksmith);
-				case 'n' | 'N' | ' ':	//next turn
+				case 'n' | 'N' | ' ':
 					commandNextTurn();
-				case 'u' | 'U':	//upgrade
+				case 'u' | 'U':	
 					commandUpgrade();
 				default:
 			}
@@ -375,10 +376,21 @@ import hl.UI.Window;
 	public function growPopulation() {
 		if (population < buildings[Building.House] * 3) population++;
 	}
+	
+	public function shrinkPopulation(deficit:Int) {
+		if (population > 0) population--;
+	}
 		
 	public function commandNextTurn() {
-		resources.addPile(countIncome());
-		growPopulation();
+		var foodDeficit = -countIncome().resources[Resource.Grain] - resources.resources[Resource.Grain];
+		if (foodDeficit > 0) {
+			shrinkPopulation(foodDeficit);
+		}
+		
+		//something wrong with grain arithmetic
+		@FIX
+		resources.cutoffAddPile(countIncome());
+		if (resources.resources[Resource.Grain] > 0) growPopulation();
 		turn++;
 	}
 	
@@ -431,12 +443,17 @@ class IslandCell extends Grid.Cell {
 	
 	override public function render() {
 		
+		trace(name);
 		clear();
 		
 		if (building != null) {
 			write(Building.names[building].charAt(0), 0, 1);
 			writeLeft("" + buildingLevel, 1, columns - 2);
 		}
+		
+		//this call should not be needed. There's something broken in TextScreen
+		@FIX
+		copyDataBuffer();
 		
 	}
 }
