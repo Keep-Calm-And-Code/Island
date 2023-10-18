@@ -45,6 +45,8 @@ import Resource;
 		this.name = name;
 		this.size = size;
 		
+		menuState = MenuState.Upgrade;
+		
 		turn = 1;
 				
 		resources = new Pile();
@@ -270,8 +272,7 @@ import Resource;
 		write('$resources', 2, 8);
 		var income = countIncome().toResourceAlignedString("+", false);
 		write('$income', 3, 7);
-		
-		menuState = MenuState.Empty;
+
 		
 		var active = grid.activeCellKey;
 		infoWindow.clear();
@@ -280,19 +281,14 @@ import Resource;
 			
 			infoWindow.write(terrainNames[cell.terrain]);
 			
-			if (cell.building == null) {
-				menuState = MenuState.Build;
-			}
 			if (cell.building != null) {
-				menuState = MenuState.Upgrade;
 				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
 			}
 		}
 		
 		commandWindow.clear();
+		
 		switch(menuState) {
-			case Empty:
-				
 			case Build:
 				commandWindow.write("Build:");
 				
@@ -311,6 +307,8 @@ import Resource;
 						
 					row++;
 				}
+
+				commandWindow.write("V)iew population", 10);
 				
 			case Upgrade:
 				commandWindow.write(" U)pgrade");
@@ -320,9 +318,16 @@ import Resource;
 				if (resources.hasPile(costToUpgrade())) commandWindow.write("*");
 				
 				commandWindow.write(cost.toLeftAlignedString(), 0, 12);
+				
+				commandWindow.write("V)iew population", 10);
+				
+			case ViewPopulation:
+				commandWindow.write('Base happiness:  $baseHappiness');
+				commandWindow.write('From temples  : +' + buildings[Building.Temple] * 2, 1);
+				commandWindow.write('                 ' + calculateHappiness(), 2);
 		}
 		
-		commandWindow.write("N)ext week", 11);
+		commandWindow.write("N)ext week", 12);
 		
 		mainWindow.display();
 	}
@@ -336,13 +341,13 @@ import Resource;
 		
 			switch(input) {
 				case '4':
-					commandMoveLeft();
+					commandMove(Direction.Left);
 				case '6':
-					commandMoveRight();
+					commandMove(Direction.Right);
 				case '8':
-					commandMoveUp();
+					commandMove(Direction.Up);
 				case '2':
-					commandMoveDown();
+					commandMove(Direction.Down);
 				case 'h' | 'H':	
 					commandBuild(Building.House);
 				case 'f' | 'F':
@@ -359,6 +364,8 @@ import Resource;
 					commandNextTurn();
 				case 'u' | 'U':	
 					commandUpgrade();
+				case 'v' | 'V':
+					menuState = MenuState.ViewPopulation;
 				default:
 			}
 			
@@ -372,6 +379,15 @@ import Resource;
 			display();
 			input = "";
 		}
+	}
+	
+	public function commandMove(dir:Direction) {
+		grid.activeCellKey = grid.closestCellInDirection(grid.activeCellKey, dir);
+		
+		if (getActiveCell().building == null) menuState = MenuState.Build;
+		else menuState = MenuState.Upgrade;
+		
+		
 	}
 	
 	public function commandMoveUp() {
@@ -400,6 +416,8 @@ import Resource;
 			getActiveCell().buildingLevel = 1;
 			buildings[b]++;
 	
+			menuState = MenuState.Upgrade;
+			
 			commandNextTurn();
 		}
 	}
@@ -453,9 +471,9 @@ enum GenerationType {
 }
 	
 enum MenuState {
-	Empty;
 	Build;
 	Upgrade;
+	ViewPopulation;
 }
 
 
