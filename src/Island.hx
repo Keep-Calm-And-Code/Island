@@ -31,6 +31,8 @@ import Resource;
 	
 	var population:Int;
 	
+	public static var baseHappiness = 50;
+	
 	public var resources:Pile;
 	
 	public var buildings:Map<Building, UInt>;
@@ -44,9 +46,7 @@ import Resource;
 		this.size = size;
 		
 		turn = 1;
-		
-		population = 3;
-		
+				
 		resources = new Pile();
 		resources.add(Grain, 50);
 		resources.add(Wood, 50);
@@ -64,6 +64,8 @@ import Resource;
 		}
 		
 		countBuildings();
+
+		population = 3;	
 		
 		mainWindow.addChild(grid.window, 5);
 		
@@ -161,7 +163,7 @@ import Resource;
 			
 			//coast is recalculated each time, instead of gradually being updated. 
 			//just not worthwhile to do something smarter now, island generator is currently a naive placeholder anyways			
-			@INEFFICIENT 	
+			@IMPROVE
 			var coastKey = Utils.randomElement(coastCellKeys());
 			var key = Utils.randomElement(grid.potentialNeighbors(coastKey));
 			
@@ -258,12 +260,16 @@ import Resource;
 	}
 	
 	public function display() {
-		write('Week $turn', 0, 20);
+		write('Week $turn',  0, 4);
 		
-		write('Islanders: $population', 2);
-		write('$resources', 2, 18);
+		write('Islanders: $population', 0, 20);
+		write('Happiness: ' + calculateHappiness(), 0, 40);
+		
+		if (calculateHappiness() >= 90) write ('You win!', 0, 60);
+		
+		write('$resources', 2, 8);
 		var income = countIncome().toResourceAlignedString("+", false);
-		write('$income', 3, 17);
+		write('$income', 3, 7);
 		
 		menuState = MenuState.Empty;
 		
@@ -398,12 +404,18 @@ import Resource;
 		}
 	}
 	
+	//these functions are simple placeholders, meant to map out the code structure first
+	//they'll become much more sophisticated later
 	public function growPopulation() {
 		if (population < buildings[Building.House] * 3) population++;
 	}
 	
 	public function shrinkPopulation(deficit:Int) {
 		if (population > 0) population--;
+	}
+	
+	public function calculateHappiness() {
+		return baseHappiness + 2 * buildings[Building.Temple];
 	}
 		
 	public function commandNextTurn() {
