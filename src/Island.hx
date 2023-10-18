@@ -389,22 +389,7 @@ import Resource;
 		
 		
 	}
-	
-	public function commandMoveUp() {
-		grid.activeCellKey = grid.closestCellInDirection(grid.activeCellKey, Direction.Up);
-	}
-	
-	public function commandMoveDown() {
-		grid.activeCellKey = grid.closestCellInDirection(grid.activeCellKey, Direction.Down);
-	}
-	
-	public function commandMoveLeft() {
-		grid.activeCellKey = grid.closestCellInDirection(grid.activeCellKey, Direction.Left);
-	}
-	
-	public function commandMoveRight() {
-		grid.activeCellKey = grid.closestCellInDirection(grid.activeCellKey, Direction.Right);
-	}
+
 	
 	public function commandBuild(b:Building) {
 		if (menuState == MenuState.Build &&
