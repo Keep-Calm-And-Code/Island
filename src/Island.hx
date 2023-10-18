@@ -185,8 +185,18 @@ import Resource;
 		mainWindow.write(s, r, c);
 	}
 	
+	private inline function getCell(key:String) {
+		if (grid.cells.exists(key)) return cast(grid.cells[key], IslandCell);
+		else return null;
+	}
+	
 	private inline function getActiveCell() {
-		return cast(grid.cells[grid.activeCellKey], IslandCell);
+		if (grid.activeCellKey == null) return null;
+		return getCell(grid.activeCellKey);
+	}
+	
+	private inline function getActiveCellKey() {
+		return grid.activeCellKey;
 	}
 	
 	public function countBuildings() {
@@ -222,6 +232,16 @@ import Resource;
 	
 	inline public function costToBuild(b:Building) {
 		return Building.CostToBuild(b, 0);		
+	}
+	
+	public function isValidLocation(b:Building, ?key:String) {
+		if (key == null) key = grid.activeCellKey;
+		
+		if (b == Building.Farm && getCell(key).terrain != Terrain.Grass) return false;
+		if (b == Building.Sawmill && getCell(key).terrain != Terrain.Forest) return false;
+		if (b == Building.Mine && getCell(key).terrain != Terrain.Hills) return false;
+		
+		return true;
 	}
 	
 	public function coastCellKeys() {
@@ -272,15 +292,17 @@ import Resource;
 				
 				var row = 2;
 				for (b in Type.allEnums(Building)) {
-					commandWindow.write(Building.names[b], row, 2);
-					commandWindow.write(Building.names[b].charAt(0) + ")", row, 1);
-					
-					var cost = costToBuild(b);
-					
-					if (resources.hasPile(cost)) commandWindow.write("*", row, 0);
-					
-					commandWindow.write('$cost', row, 12);
-					
+					if (isValidLocation(b)) {
+						commandWindow.write(Building.names[b], row, 2);
+						commandWindow.write(Building.names[b].charAt(0) + ")", row, 1);
+						
+						var cost = costToBuild(b);
+						
+						if (resources.hasPile(cost)) commandWindow.write("*", row, 0);
+						
+						commandWindow.write('$cost', row, 12);
+					}	
+						
 					row++;
 				}
 				
@@ -362,6 +384,7 @@ import Resource;
 	
 	public function commandBuild(b:Building) {
 		if (menuState == MenuState.Build &&
+			isValidLocation(b) &&
 			resources.hasPile(costToBuild(b))) {
 				
 			resources.subtractPile(costToBuild(b));
@@ -443,7 +466,6 @@ class IslandCell extends Grid.Cell {
 	
 	override public function render() {
 		
-		trace(name);
 		clear();
 		
 		if (building != null) {
@@ -451,7 +473,8 @@ class IslandCell extends Grid.Cell {
 			writeLeft("" + buildingLevel, 1, columns - 2);
 		}
 		
-		//this call should not be needed. There's something broken in TextScreen
+		//this call should not be needed. Why does super.render() not work?
+		//There's something I'm missing here
 		@FIX
 		copyDataBuffer();
 		

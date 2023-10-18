@@ -15,10 +15,6 @@ class Main
 	{	
 		var test = new Island(14, Island.GenerationType.Random, "Test");
 		
-		//trace(test.resources[Resource.Wood]);
-		//test.resources[Resource.Wood] = 88;
-		//trace(test.resources[Resource.Wood]);
-		
 		test.display();
 		
 		
