@@ -308,7 +308,6 @@ class TextWindow extends TextScreen {
 			}
 		}
 	}
-
 	
 }
 

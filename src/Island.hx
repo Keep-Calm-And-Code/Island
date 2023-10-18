@@ -347,6 +347,8 @@ import Resource;
 					commandBuild(Building.Mine);
 				case 'b' | 'B':
 					commandBuild(Building.Blacksmith);
+				case 't' | 'T':
+					commandBuild(Building.Temple);
 				case 'n' | 'N' | ' ':
 					commandNextTurn();
 				case 'u' | 'U':	
