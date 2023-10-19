@@ -80,7 +80,15 @@ class Pile {
 		return all;
 	}
 	
-
+	
+	public function get(r:Resource) {
+		if (resources.exists(r)) {
+			return resources[r];
+		}
+		else return null;
+	}
+	
+	
 	public function hasPile(p:Pile) {
 		for (r in p.resources.keys()) {
 			if (!resources.exists(r) || resources[r] < p.resources[r]) {
@@ -94,12 +102,14 @@ class Pile {
 	public function add(r:Resource, n:Int) {
 		if (resources.exists(r)) resources[r] += n;
 		else resources[r] = n;
+		return this;
 	}
 	
 	//will not result in negative resources
 	public function cutoffAdd(r:Resource, n:Int) {
 		if (resources.exists(r)) resources[r] = Utils.maxInt(resources[r] + n, 0);
 		else resources[r] = Utils.maxInt(n, 0);
+		return this;	
 	}
 	
 	public function subtract(r:Resource, n:Int) {
@@ -115,24 +125,28 @@ class Pile {
 		for (r in p.resources.keys()) {
 			add(r, p.resources[r]);
 		}
+		return this;
 	}
 	
 	public function cutoffAddPile(p:Pile) {
 		for (r in p.resources.keys()) {
 			cutoffAdd(r, p.resources[r]);
 		}
+		return this;
 	}
 		
 	public function subtractPile(p:Pile) {
 		for (r in p.resources.keys()) {
 			subtract(r, p.resources[r]);
 		}		
+		return this;
 	}
 	
 	public function cutoffSubtractPile(p:Pile) {
 		for (r in p.resources.keys()) {
 			cutoffSubtract(r, p.resources[r]);
 		}		
+		return this;
 	}
 	
 }

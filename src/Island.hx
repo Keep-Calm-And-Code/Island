@@ -72,10 +72,10 @@ import Resource;
 		mainWindow.addChild(grid.window, 5);
 		
 		infoWindow = new TextWindow(2, "info");
-		mainWindow.addChild(infoWindow, 5, 40);
+		mainWindow.addChild(infoWindow, 5, 35);
 		
 		commandWindow = new TextWindow(20, "command");
-		mainWindow.addChild(commandWindow, 8, 40);
+		mainWindow.addChild(commandWindow, 8, 35);
 	}
 	
 	public function randomTerrain() {
@@ -138,7 +138,7 @@ import Resource;
 		cast(grid.cells["2, 2"], Island.IslandCell).building = Building.Sawmill;
 		cast(grid.cells["2, 2"], Island.IslandCell).buildingLevel = 1;
 		cast(grid.cells["2, 1"], Island.IslandCell).building = Building.Farm;
-		cast(grid.cells["2, 1"], Island.IslandCell).buildingLevel = 1;	
+		cast(grid.cells["2, 1"], Island.IslandCell).buildingLevel = 2;	
 		
 	}
 	
@@ -174,7 +174,7 @@ import Resource;
 			switch (i) {
 				case 1:
 					cast(grid.cells[key], IslandCell).building = Building.Farm;
-					cast(grid.cells[key], IslandCell).buildingLevel = 1;
+					cast(grid.cells[key], IslandCell).buildingLevel = 2;
 				case 2:
 					cast(grid.cells[key], IslandCell).building = Building.Sawmill;
 					cast(grid.cells[key], IslandCell).buildingLevel = 1;	
@@ -216,19 +216,6 @@ import Resource;
 		return buildings = count;
 	}
 	
-	public function countIncome() {
-		
-		var income = new Pile();
-		
-		income.add(Resource.Grain, 10 * buildings[Building.Farm]);
-		income.add(Resource.Wood, 10 * buildings[Building.Sawmill]);
-		income.add(Resource.Metal, 10 * buildings[Building.Mine]);
-		income.add(Resource.Tools, 5 * buildings[Building.Blacksmith]);
-
-		income.add(Resource.Grain, -4 * population);
-		
-		return income;
-	}
 	
 	inline public function costToUpgrade() {
 		return Building.CostToBuild(getActiveCell().building, getActiveCell().buildingLevel);
@@ -270,7 +257,7 @@ import Resource;
 		if (calculateHappiness() >= 90) write ('You win!', 0, 60);
 		
 		write('$resources', 2, 8);
-		var income = countIncome().toResourceAlignedString("+", false);
+		var income = calculateIncome().toResourceAlignedString("+", false);
 		write('$income', 3, 7);
 
 		
@@ -283,6 +270,10 @@ import Resource;
 			
 			if (cell.building != null) {
 				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
+				
+				if (calculateCellProduction(cell) != null) {
+					infoWindow.write('Produces ' + calculateCellProduction(cell), 1, 15);
+				}
 			}
 		}
 		
@@ -338,6 +329,10 @@ import Resource;
 		while (input == "") {
 			input = Sys.getChar(false);
 			trace(input);
+			trace(calculateCellProduction(getActiveCell()));
+			trace(calculatePrimaryProduction());
+			trace(calculateSecondaryProduction());
+			trace(calculateConsumption());
 		
 			switch(input) {
 				case '4':
@@ -407,33 +402,6 @@ import Resource;
 		}
 	}
 	
-	//these functions are simple placeholders, meant to map out the code structure first
-	//they'll become much more sophisticated later
-	public function growPopulation() {
-		if (population < buildings[Building.House] * 3) population++;
-	}
-	
-	public function shrinkPopulation(deficit:Int) {
-		if (population > 0) population--;
-	}
-	
-	public function calculateHappiness() {
-		return baseHappiness + 2 * buildings[Building.Temple];
-	}
-		
-	public function commandNextTurn() {
-		var foodDeficit = -countIncome().resources[Resource.Grain] - resources.resources[Resource.Grain];
-		if (foodDeficit > 0) {
-			shrinkPopulation(foodDeficit);
-		}
-		
-		//something wrong with grain arithmetic
-		@FIX
-		resources.cutoffAddPile(countIncome());
-		if (resources.resources[Resource.Grain] > 0) growPopulation();
-		turn++;
-	}
-	
 	public function commandUpgrade() {
 		if (menuState == MenuState.Upgrade &&
 			resources.hasPile(costToUpgrade())) {
@@ -444,6 +412,152 @@ import Resource;
 	
 			commandNextTurn();
 		}
+	}
+	
+	public function commandNextTurn() {
+		var income = calculateIncome();
+		
+		var foodDeficit = -income.resources[Resource.Grain] - resources.resources[Resource.Grain];
+		if (foodDeficit > 0) {
+			shrinkPopulation(foodDeficit);
+		}
+		
+		//something wrong with grain arithmetic
+		@FIX
+		resources.cutoffAddPile(income);
+		if (resources.resources[Resource.Grain] > 0) growPopulation();
+		turn++;
+	}
+	
+	
+	//these functions are simple placeholders, meant to map out the code structure first
+	//they'll become much more sophisticated later
+	public function growPopulation() {
+		if (population < buildings[Building.House] * 3) population++;
+	}
+	
+	public function shrinkPopulation(deficit:Int) {
+		if (population > 0) population--;
+	}
+	
+	
+	public function calculateIncome() {
+		
+		return calculatePrimaryProduction().addPile(calculateSecondaryProduction()).subtractPile(calculateConsumption());
+	}
+	
+	public function calculateCellProduction(?cell:IslandCell):Pile {
+		
+		if (cell == null) cell = getActiveCell();
+		
+		var income = new Pile();
+		
+		if (cell.building == null) return income;
+		
+		switch(cell.building) {
+			
+			case Building.Farm:
+				var base = 10;
+				for (key in cell.neighbors) {
+					if (getCell(key).building == Building.Farm) {
+						base++;
+					}
+				}
+				
+				return income.add(Resource.Grain, base * cell.buildingLevel);
+			
+			case Building.Sawmill:
+				var base = 10;
+				for (key in cell.neighbors) {
+					if (getCell(key).building == Building.Farm) {
+						base++;
+					}
+				}
+				
+				return income.add(Resource.Wood, base * cell.buildingLevel);				
+			
+			case Building.Mine:
+				var base = 10;
+				for (key in cell.neighbors) {
+					if (getCell(key).building == Building.Mine) {
+						base++;
+					}
+				}
+				
+				return income.add(Resource.Metal, base * cell.buildingLevel);
+			
+			case Building.Blacksmith:
+				
+				return income.add(Resource.Tools, 5 * cell.buildingLevel);
+				
+			default:
+				
+				return income;
+				
+		}
+		
+	}
+	
+	//grain, wood, metal
+	public function calculatePrimaryProduction() {
+		var prod = new Pile();
+		
+		//given how simple income calculations are right now, this is very long-winded and inefficient
+		//but I think the overall structure is better suited for future design additions
+		//so I want that structure in place now
+		for (cell in grid.cells) {
+			var iCell = cast(cell, IslandCell);
+			if (iCell.building == Building.Farm ||
+				iCell.building == Building.Sawmill ||
+				iCell.building == Building.Mine) {
+				
+				prod.addPile(calculateCellProduction(iCell));
+			}
+		}
+		
+		return prod;
+	}
+	
+	public function calculateSecondaryProduction() {
+		var prod = new Pile();
+		
+		if (buildings[Building.Blacksmith] > 0) {
+			var primaryProd = calculatePrimaryProduction();
+			var woodMade = primaryProd.resources[Resource.Wood];
+			var metalMade = 0;
+			if (primaryProd.resources.exists(Resource.Metal)) {
+				metalMade = primaryProd.resources[Resource.Metal];
+			}
+			
+			var toolsMade = Utils.minInt(resources.resources[Resource.Wood] + woodMade, 
+										 resources.resources[Resource.Metal] + metalMade,
+										 5 * buildings[Building.Blacksmith]);
+										 
+			prod.add(Resource.Tools, toolsMade);
+		}
+		
+		return prod;
+	}
+	
+	public function calculateConsumption() {
+		var consumption = new Pile();
+		
+		consumption.add(Resource.Grain, 4 * population);
+		
+		//tools may be made
+		if (buildings[Building.Blacksmith] > 0) {
+			var toolsMade = calculateSecondaryProduction().resources[Resource.Tools];
+		
+			consumption.add(Resource.Wood, toolsMade);
+			consumption.add(Resource.Metal, toolsMade);
+		}
+		
+		return consumption;
+	}
+	
+	
+	public function calculateHappiness() {
+		return baseHappiness + 2 * buildings[Building.Temple];
 	}
  
 }
