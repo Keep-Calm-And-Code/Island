@@ -21,6 +21,16 @@ var names = [
 ];
 
 
+//Currently if a resource hasn't been interacted with to form the pile (i.e. the resource isn't
+//relevant to the pile), the resources Map will not contain it as a key/
+//
+//Note that a resource could map to 0; that means it's been interacted with when forming the pile
+//(just so happens the value ended up as 0)
+//
+//Alternatively, should resources contain every resource as a key, and have null values
+//indicate resources that haven't been interacted with?
+//This means each instance of Pile is larger and takes longer to operate on them. But
+//maybe conditionals involving them generally become cleaner?
 
 class Pile {
 	
