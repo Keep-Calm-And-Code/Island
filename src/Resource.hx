@@ -166,7 +166,7 @@ class Pile {
 	//1) the total number of resources in the product is equal to 
 	//   the total number of resources in the original pile * f, rounded
 	//2) as f increases, no resource in the product ever decreases, i.e.
-	//   f > g imples pile * f contains pile * g
+	//   f > g implies pile * f contains pile * g
 	public function multiplyAndRound(f:Float) {
 		var product = new Pile();
 		
