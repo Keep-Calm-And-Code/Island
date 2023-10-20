@@ -22,7 +22,7 @@ var names = [
 
 
 //Currently if a resource hasn't been interacted with to form the pile (i.e. the resource isn't
-//relevant to the pile), the resources Map will not contain it as a key/
+//relevant to the pile), the resources Map will not contain it as a key
 //
 //Note that a resource could map to 0; that means it's been interacted with when forming the pile
 //(just so happens the value ended up as 0)
@@ -157,6 +157,21 @@ class Pile {
 			cutoffSubtract(r, p.resources[r]);
 		}		
 		return this;
+	}
+	
+	//the ideal is to have a function that cleverly performs rounding so that:
+	//1) the total number of resources in the product is equal to 
+	//   the total number of resources in the original pile * f, rounded
+	//2) as f increases, no resource in the product ever decreases, i.e.
+	//   f > g imples pile * f contains pile * g
+	public function multiplyAndRound(f:Float) {
+		var product = new Pile();
+		
+		for (r in resources.keys()) {
+			product.add(r, Math.floor(resources[r] * f + 0.5));
+		}
+		
+		return product;
 	}
 	
 }
