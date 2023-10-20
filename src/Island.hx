@@ -203,6 +203,9 @@ import Resource;
 		return grid.activeCellKey;
 	}
 	
+	
+	//buildings is actually updated every time a building is built or upgraded
+	//I'm still keeping this function here.
 	public function countBuildings() {
 		var count:Map<Building, UInt> = [for (b in Type.allEnums(Building)) b => 0];
 		
@@ -214,6 +217,24 @@ import Resource;
 		}
 		
 		return buildings = count;
+	}
+	
+	//This value is recalculated every time it's used.
+	//This constantly bothers me: whether something should be recalculated from scratch,
+	//or whether a variable representing it should be updated whenever it changes.
+	//The best decision depends on the code complexity and computational cost of both approaches
+	//Trouble is, as the design evolves, both may change in unexpected ways.
+	//
+	//Maybe the bigger consideration is that something may matter so little that one should treat
+	//it as insignificant, just to reduce one thing from mental consideration.
+	//In this case, computational cost is probably insignificant.
+	//If the value is to be constantly updated, code is needed in other places too.
+	//Means it's harder to make changes.
+	
+	public function countJobs() {
+		var count = -buildings[Building.House];
+		for (b in buildings) count += b;	//counts all building levels except Houses
+		return count;
 	}
 	
 	
@@ -251,8 +272,8 @@ import Resource;
 	public function display() {
 		write('Week $turn',  0, 4);
 		
-		write('Islanders: $population', 0, 20);
-		write('Happiness: ' + calculateHappiness(), 0, 40);
+		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
+		write('Happiness: ' + calculateHappiness(), 0, 50);
 		
 		if (calculateHappiness() >= 90) write ('You win!', 0, 60);
 		
