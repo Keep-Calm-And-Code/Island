@@ -253,6 +253,8 @@ import Resource;
 		if (b == Building.Sawmill && getCell(key).terrain != Terrain.Forest) return false;
 		if (b == Building.Mine && getCell(key).terrain != Terrain.Hills) return false;
 		
+		if (b == Building.Port && coastCellKeys().indexOf(key) == -1) return false; 
+		
 		return true;
 	}
 	
@@ -275,7 +277,7 @@ import Resource;
 		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
 		write('Happiness: ' + calculateHappiness(), 0, 50);
 		
-		if (calculateHappiness() >= 90) write ('You win!', 0, 60);
+		if (calculateHappiness() >= 90) write ('You win!', 0, 66);
 		
 		write('$resources', 2, 8);
 		var income = calculateIncome().toResourceAlignedString("+", false);
@@ -350,10 +352,6 @@ import Resource;
 		while (input == "") {
 			input = Sys.getChar(false);
 			trace(input);
-			trace(calculateCellProduction(getActiveCell()));
-			trace(calculatePrimaryProduction());
-			trace(calculateSecondaryProduction());
-			trace(calculateConsumption());
 		
 			switch(input) {
 				case '4':
@@ -374,6 +372,8 @@ import Resource;
 					commandBuild(Building.Mine);
 				case 'b' | 'B':
 					commandBuild(Building.Blacksmith);
+				case 'p' | 'P':
+					commandBuild(Building.Port);
 				case 't' | 'T':
 					commandBuild(Building.Temple);
 				case 'n' | 'N' | ' ':
@@ -443,7 +443,7 @@ import Resource;
 			shrinkPopulation(foodDeficit);
 		}
 		
-		//something wrong with grain arithmetic
+		//something wrong with grain arithmetic in some cases when total Grain hovers around 0
 		@FIX
 		resources.cutoffAddPile(income);
 		if (resources.resources[Resource.Grain] > 0) growPopulation();
@@ -453,10 +453,12 @@ import Resource;
 	
 	//these functions are simple placeholders, meant to map out the code structure first
 	//they'll become much more sophisticated later
+	@IMPROVE
 	public function growPopulation() {
 		if (population < buildings[Building.House] * 3) population++;
 	}
 	
+	@IMPROVE
 	public function shrinkPopulation(deficit:Int) {
 		if (population > 0) population--;
 	}
@@ -536,7 +538,12 @@ import Resource;
 			}
 		}
 		
-		return prod;
+		trace(countJobs());
+		if (countJobs() > population) {
+			trace("Primary prod scaled by " + population / countJobs());
+			return prod.multiplyAndRound(population / countJobs());
+		}
+		else return prod;
 	}
 	
 	public function calculateSecondaryProduction() {
@@ -557,7 +564,11 @@ import Resource;
 			prod.add(Resource.Tools, toolsMade);
 		}
 		
-		return prod;
+		if (countJobs() > population) {
+			trace("Secondary prod scaled by " + population / countJobs());
+			return prod.multiplyAndRound(population / countJobs());
+		}
+		else return prod;
 	}
 	
 	public function calculateConsumption() {
