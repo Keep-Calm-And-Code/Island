@@ -159,6 +159,9 @@ class Pile {
 		return this;
 	}
 	
+	//This function, or anything else used to compute production bonii/malii should be
+	//deterministic.
+	//
 	//the ideal is to have a function that cleverly performs rounding so that:
 	//1) the total number of resources in the product is equal to 
 	//   the total number of resources in the original pile * f, rounded
