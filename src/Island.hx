@@ -512,6 +512,11 @@ import Resource;
 				
 				return income.add(Resource.Tools, 5 * cell.buildingLevel);
 				
+			case Building.Port:
+				
+				income.add(Resource.Fish, 8 * cell.buildingLevel);
+				return income.add(Resource.Goods, 4 * cell.buildingLevel);
+				
 			default:
 				
 				return income;
@@ -531,7 +536,8 @@ import Resource;
 			var iCell = cast(cell, IslandCell);
 			if (iCell.building == Building.Farm ||
 				iCell.building == Building.Sawmill ||
-				iCell.building == Building.Mine) {
+				iCell.building == Building.Mine ||
+				iCell.building == Building.Port) {
 				
 				prod.addPile(calculateCellProduction(iCell));
 			}

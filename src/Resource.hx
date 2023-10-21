@@ -7,17 +7,21 @@ package;
 
 enum Resource {
 	Grain;
+	Fish;
 	Wood;
 	Metal;
 	Tools;
+	Goods;
 }
 
 
 var names = [
 	Resource.Grain => "Grain",
+	Resource.Fish => "Fish",
 	Resource.Wood => "Wood",
 	Resource.Metal => "Metal",
-	Resource.Tools => "Tools"
+	Resource.Tools => "Tools",
+	Resource.Goods => "Goods"
 ];
 
 
