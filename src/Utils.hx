@@ -25,6 +25,15 @@ class Utils {
 		else return minInt(a, minInt(b, c));
 	}	
 	
+	static public function round(f:Float, ?places:UInt = 0):Float {
+		var shift = Math.pow(10, places);
+		return Math.floor(f * shift + 0.5) / shift;
+	}
+	
+	static public function roundInt(f:Float):Int {
+		return Math.floor(f + 0.5);
+	}
+	
 	static public function randomElement(a:Array<Dynamic>) {
 		if (a.length == 0) return null;
 		
