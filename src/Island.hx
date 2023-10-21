@@ -341,9 +341,11 @@ import Resource;
 				
 				commandWindow.write('$grainEaten Grain + $fishEaten Fish', 1, 22);
 				
-				commandWindow.write('Base happiness:  $baseHappiness', 3);
-				commandWindow.write('From temples  : +' + buildings[Building.Temple] * 2, 4);
-				commandWindow.write('                 ' + calculateHappiness(), 5);
+				commandWindow.write('Happiness from', 3);
+				
+				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment() + ' (Max 50 at 50% employment)', 5);
+				commandWindow.write('temples    : +' + calculateHappinessFromTemples(), 6);
+				commandWindow.write('              ' + calculateHappiness(), 7);
 		}
 		
 		commandWindow.write("N)ext week", 12);
@@ -611,8 +613,17 @@ import Resource;
 	}
 	
 	
+	public function calculateHappinessFromEmployment() {
+		return baseHappiness * Math.min(1, population / (2 * countJobs()));
+	}
+	
+	public function calculateHappinessFromTemples() {
+		return 3 * buildings[Building.Temple];
+	}
+	
 	public function calculateHappiness() {
-		return baseHappiness + 2 * buildings[Building.Temple];
+		return calculateHappinessFromEmployment()
+		     + calculateHappinessFromTemples();
 	}
  
 }
