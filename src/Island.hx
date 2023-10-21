@@ -335,9 +335,15 @@ import Resource;
 				commandWindow.write("V)iew population", 10);
 				
 			case ViewPopulation:
-				commandWindow.write('Base happiness:  $baseHappiness');
-				commandWindow.write('From temples  : +' + buildings[Building.Temple] * 2, 1);
-				commandWindow.write('                 ' + calculateHappiness(), 2);
+				commandWindow.write('$population islanders consuming ' + population * 4 + ' food');
+				var grainEaten = calculateConsumption().resources[Resource.Grain];
+				var fishEaten = calculateConsumption().resources[Resource.Fish];
+				
+				commandWindow.write('$grainEaten Grain + $fishEaten Fish', 1, 22);
+				
+				commandWindow.write('Base happiness:  $baseHappiness', 3);
+				commandWindow.write('From temples  : +' + buildings[Building.Temple] * 2, 4);
+				commandWindow.write('                 ' + calculateHappiness(), 5);
 		}
 		
 		commandWindow.write("N)ext week", 12);
@@ -410,15 +416,15 @@ import Resource;
 		if (menuState == MenuState.Build &&
 			isValidLocation(b) &&
 			resources.hasPile(costToBuild(b))) {
+			
+			commandNextTurn();	
 				
 			resources.subtractPile(costToBuild(b));
 			getActiveCell().building = b;
 			getActiveCell().buildingLevel = 1;
 			buildings[b]++;
 	
-			menuState = MenuState.Upgrade;
-			
-			commandNextTurn();
+			menuState = MenuState.Upgrade;			
 		}
 	}
 	
@@ -426,11 +432,12 @@ import Resource;
 		if (menuState == MenuState.Upgrade &&
 			resources.hasPile(costToUpgrade())) {
 				
+			commandNextTurn();
+
 			resources.subtractPile(costToUpgrade());
 			getActiveCell().buildingLevel++;
 			buildings[getActiveCell().building]++;
 	
-			commandNextTurn();
 		}
 	}
 	
@@ -579,7 +586,18 @@ import Resource;
 	public function calculateConsumption() {
 		var consumption = new Pile();
 		
-		consumption.add(Resource.Grain, 4 * population);
+		var totalGrain = resources.resources[Resource.Grain] + calculatePrimaryProduction().resources[Resource.Grain];
+		var totalFish = resources.resources[Resource.Fish] + calculatePrimaryProduction().resources[Resource.Fish];
+
+		var toConsume = 4 * population;
+		
+		if (toConsume > totalGrain + totalFish) {
+			consumption.add(Resource.Fish, totalFish).add(Resource.Grain, toConsume - totalFish);
+		}
+		else {
+			var grainEaten = Math.ceil(toConsume * totalGrain / (totalGrain + totalFish));
+			consumption.add(Resource.Grain, grainEaten).add(Resource.Fish, toConsume - grainEaten);
+		}
 		
 		//tools may be made
 		if (buildings[Building.Blacksmith] > 0) {
