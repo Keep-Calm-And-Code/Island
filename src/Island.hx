@@ -166,19 +166,20 @@ import Resource;
 			//coast is recalculated each time, instead of gradually being updated. 
 			//just not worthwhile to do something smarter now, island generator is currently a naive placeholder anyways			
 			@IMPROVE
-			var coastKey = Utils.randomElement(coastCellKeys());
-			var key = Utils.randomElement(grid.potentialNeighbors(coastKey));
-			
-			makeCell(grid.toCellX(key), grid.toCellY(key));
+			var borderKey = Utils.randomElement(grid.cellKeysWithPotentialNeighbors());
+			var key = Utils.randomElement(grid.potentialNeighbors(borderKey));
 			
 			switch (i) {
 				case 1:
+					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Grass);
 					cast(grid.cells[key], IslandCell).building = Building.Farm;
 					cast(grid.cells[key], IslandCell).buildingLevel = 2;
 				case 2:
+					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Forest);
 					cast(grid.cells[key], IslandCell).building = Building.Sawmill;
 					cast(grid.cells[key], IslandCell).buildingLevel = 1;	
 				default:
+					makeCell(grid.toCellX(key), grid.toCellY(key));
 			}
 			
 		}
@@ -253,22 +254,20 @@ import Resource;
 		if (b == Building.Sawmill && getCell(key).terrain != Terrain.Forest) return false;
 		if (b == Building.Mine && getCell(key).terrain != Terrain.Hills) return false;
 		
-		if (b == Building.Port && coastCellKeys().indexOf(key) == -1) return false; 
+		if (b == Building.Port && 
+			(getCell(key).terrain != Terrain.Grass || !isCoastCellKey(key))) return false; 
 		
 		return true;
 	}
 	
-	public function coastCellKeys() {
+	public function isCoastCellKey(key:String) {
 		
-		var coast = [];
-		
-		for (c in grid.cells.keys()) {
-			if (grid.potentialNeighbors(c).length > 0) {
-				coast.push(c);
-			}
+		if (grid.toCellX(key) == 0 || grid.toCellX(key) == grid.gridCols - 1 ||
+			grid.toCellY(key) == 0 || grid.toCellY(key) == grid.gridRows - 1 ||
+			grid.cellKeysWithPotentialNeighbors().contains(key)) {
+				return true;
 		}
-		
-		return coast;
+		else return false;
 	}
 	
 	public function display() {

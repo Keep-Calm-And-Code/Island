@@ -11,6 +11,7 @@ enum Building {
 	Sawmill;
 	Mine;
 	Blacksmith;
+	Port;
 	Temple;
 }
  
@@ -21,6 +22,7 @@ var names = [
 	Building.Sawmill 	=> "Sawmill",
 	Building.Mine 		=> "Mine",
 	Building.Blacksmith => "Blacksmith",
+	Building.Port		=> "Port",
 	Building.Temple 	=> "Temple"
 ];
 
@@ -60,6 +62,12 @@ function CostToBuild(b:Building, n:Int) {  //n: current number of buildings)
 			cost.add(Resource.Wood, 6 + 3 * n * (n + 1));
 			cost.add(Resource.Metal, 8 + 4 * n * (n + 1));
 			return cost;		
+			
+		case Building.Port:
+			cost.add(Resource.Wood, 8 + 4 * n * (n + 1));
+			cost.add(Resource.Metal, 6 + 3 * n * (n + 1));
+			if (n >= 3) cost.add(Resource.Tools, 4 * (n - 2) * (n - 1));
+			return cost;
 			
 		case Building.Temple:
 			cost.add(Resource.Grain, 5 + 5 * n * (n + 2));

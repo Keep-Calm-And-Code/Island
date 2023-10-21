@@ -375,6 +375,20 @@ class HexGrid extends Grid
 		
 	}
 	
+	
+	public function cellKeysWithPotentialNeighbors() {
+		
+		var keys = [];
+		
+		for (k in cells.keys()) {
+			if (potentialNeighbors(k).length > 0) {
+				keys.push(k);
+			}
+		}
+		
+		return keys;
+	}
+	
 	public function display() {
 
 		window.display();		
