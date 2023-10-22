@@ -32,6 +32,8 @@ Blacksmiths turn Wood and Metal into Tools, which are needed to upgrade building
 
 Temples increase Happiness. Consuming Fish and Goods increases Happiness.
 
+V)iew population to see more details about Happiness and food consumption.
+
 
 How to win:
 -----------
