@@ -1,8 +1,6 @@
 # Island
 
-This repo was created for TiMaSoMo 2023, a month long event where the tildes.net community makes stuff.
-
-I'm making a simple economic strategy game where you develop an island. Don't have all the rules planned out, will see where design and development takes me.
+This repo was created for TiMaSoMo 2023, a month long event where the tildes.net community makes stuff. I'm making a simple economic strategy game where you develop an island.
 
 This is written in Haxe. Text-only output, keyboard-only input to keep things code-focused. There are broadly two parts to the project:
 
@@ -25,10 +23,13 @@ Sawmills on Forest to produce Wood,
 Mines on Hills to produce Metal, and
 Ports on Grass along the coast to produce Fish and Goods.
 
+Farms, Sawmills and Mines gain adjacency bonuses when identical buildings are next to each other.
+
 Blacksmiths turn Wood and Metal into Tools, which are needed to upgrade buildings to higher levels.
 
-Temples increase Happiness.
+Temples increase Happiness. Consuming Fish and Goods increases Happiness.
+
 
 How to win:
 
-Achieve 90 or more Happiness.
+Achieve 100 or more Happiness.
