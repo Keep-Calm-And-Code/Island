@@ -16,7 +16,6 @@ class Main
 		var test = new Island(14, Island.GenerationType.Random, "Test");
 		
 		test.display();
-	
 		
 		
 		/*

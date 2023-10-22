@@ -32,6 +32,7 @@ import Resource;
 	var population:Int;
 	
 	public static var baseHappiness = 50;
+	public static var maxHappinessFromFood = 20;
 	
 	public var resources:Pile;
 	
@@ -276,7 +277,7 @@ import Resource;
 		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
 		write('Happiness: ' + calculateHappiness(), 0, 50);
 		
-		if (calculateHappiness() >= 90) write ('You win!', 0, 66);
+		if (calculateHappiness() >= 100) write ('You win!', 0, 70);
 		
 		write('$resources', 2, 8);
 		var income = calculateIncome().toResourceAlignedString("+", false);
@@ -315,7 +316,7 @@ import Resource;
 						
 						if (resources.hasPile(cost)) commandWindow.write("*", row, 0);
 						
-						commandWindow.write('$cost', row, 12);
+						commandWindow.write(cost.toLeftAlignedString(), row, 13);
 					}	
 						
 					row++;
@@ -343,9 +344,11 @@ import Resource;
 				
 				commandWindow.write('Happiness from', 3);
 				
-				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment() + ' (Max 50 at 50% employment)', 5);
-				commandWindow.write('temples    : +' + calculateHappinessFromTemples(), 6);
-				commandWindow.write('              ' + calculateHappiness(), 7);
+				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment() + ' (max $baseHappiness at 50% employment)', 5);
+				commandWindow.write('Food       :  ' + calculateHappinessFromFood() + ' (max $maxHappinessFromFood at 50% fish eaten)', 6);
+				commandWindow.write('Goods      :  ' + calculateHappinessFromGoods(), 7);
+				commandWindow.write('Temples    : +' + calculateHappinessFromTemples(), 8);
+				commandWindow.write('              ' + calculateHappiness(), 9);
 		}
 		
 		commandWindow.write("N)ext week", 12);
@@ -534,13 +537,16 @@ import Resource;
 		
 	}
 	
+	
+	//instead of primaryProd, secondaryProd, tertiaryProd, etc
+	//I should just do this for each individual resource
+	//but calculated in a sequence so that lower, material resource production is calculated before
+	//higher resources that require lower resources
+	
 	//grain, wood, metal
 	public function calculatePrimaryProduction() {
 		var prod = new Pile();
 		
-		//given how simple income calculations are right now, this is very long-winded and inefficient
-		//but I think the overall structure is better suited for future design additions
-		//so I want that structure in place now
 		for (cell in grid.cells) {
 			var iCell = cast(cell, IslandCell);
 			if (iCell.building == Building.Farm ||
@@ -552,9 +558,7 @@ import Resource;
 			}
 		}
 		
-		trace(countJobs());
 		if (countJobs() > population) {
-			trace("Primary prod scaled by " + population / countJobs());
 			return prod.multiplyAndRound(population / countJobs());
 		}
 		else return prod;
@@ -579,7 +583,6 @@ import Resource;
 		}
 		
 		if (countJobs() > population) {
-			trace("Secondary prod scaled by " + population / countJobs());
 			return prod.multiplyAndRound(population / countJobs());
 		}
 		else return prod;
@@ -591,14 +594,21 @@ import Resource;
 		var totalGrain = resources.resources[Resource.Grain] + calculatePrimaryProduction().resources[Resource.Grain];
 		var totalFish = resources.resources[Resource.Fish] + calculatePrimaryProduction().resources[Resource.Fish];
 
-		var toConsume = 4 * population;
+		var toEat = 4 * population;
 		
-		if (toConsume > totalGrain + totalFish) {
-			consumption.add(Resource.Fish, totalFish).add(Resource.Grain, toConsume - totalFish);
+		if (toEat > totalGrain + totalFish) {
+			consumption.add(Resource.Grain, toEat - totalFish);
+			if (totalFish > 0) consumption.add(Resource.Fish, totalFish);
 		}
 		else {
-			var grainEaten = Math.ceil(toConsume * totalGrain / (totalGrain + totalFish));
-			consumption.add(Resource.Grain, grainEaten).add(Resource.Fish, toConsume - grainEaten);
+			var grainEaten = Math.ceil(toEat * totalGrain / (totalGrain + totalFish));
+			consumption.add(Resource.Grain, grainEaten);
+			if (toEat - grainEaten > 0) consumption.add(Resource.Fish, toEat - grainEaten);
+		}
+		
+		if (resources.resources[Resource.Goods] > 0) {
+			var goodsUsed = Utils.minInt(population, Math.ceil(resources.resources[Resource.Goods] / 2));
+			consumption.add(Resource.Goods, goodsUsed);
 		}
 		
 		//tools may be made
@@ -612,9 +622,20 @@ import Resource;
 		return consumption;
 	}
 	
-	
+	//simple placeholder functions
 	public function calculateHappinessFromEmployment() {
-		return baseHappiness * Math.min(1, population / (2 * countJobs()));
+		return Utils.round(baseHappiness * Math.min(1, population / (2 * countJobs())), 1);
+	}
+	
+	public function calculateHappinessFromFood() {
+		var fishEaten = calculateConsumption().resources[Resource.Fish];
+		var grainEaten = calculateConsumption().resources[Resource.Grain];
+		
+		return Utils.round(maxHappinessFromFood * Math.min(fishEaten / grainEaten, 1), 1);
+	}
+	
+	public function calculateHappinessFromGoods() {
+		return calculateConsumption().resources[Resource.Goods] * 0.3;
 	}
 	
 	public function calculateHappinessFromTemples() {
@@ -623,6 +644,8 @@ import Resource;
 	
 	public function calculateHappiness() {
 		return calculateHappinessFromEmployment()
+			 + calculateHappinessFromFood()
+			 + calculateHappinessFromGoods()
 		     + calculateHappinessFromTemples();
 	}
  
