@@ -13,9 +13,9 @@ class Main
 	
 	static function main() 
 	{
-		var test = new Island(14, Island.GenerationType.Random, "Test");
+		var island = new Island(14, Island.GenerationType.Random, "Home");
 		
-		test.display();
+		island.display();
 		
 		
 		/*
@@ -29,7 +29,7 @@ class Main
 		island.display();
 		*/
 		
-		test.inputLoop();
+		island.inputLoop();
 		
 	}
 	

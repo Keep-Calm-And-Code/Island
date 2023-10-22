@@ -168,19 +168,31 @@ import Resource;
 			var borderKey = Utils.randomElement(grid.cellKeysWithPotentialNeighbors());
 			var key = Utils.randomElement(grid.potentialNeighbors(borderKey));
 			
-			switch (i) {
-				case 1:
-					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Grass);
-					cast(grid.cells[key], IslandCell).building = Building.Farm;
-					cast(grid.cells[key], IslandCell).buildingLevel = 2;
-				case 2:
-					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Forest);
-					cast(grid.cells[key], IslandCell).building = Building.Sawmill;
-					cast(grid.cells[key], IslandCell).buildingLevel = 1;	
-				default:
-					makeCell(grid.toCellX(key), grid.toCellY(key));
+			@IMPROVE
+			if (i == 1) {
+				makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Grass);
+				cast(grid.cells[key], IslandCell).building = Building.Farm;
+				cast(grid.cells[key], IslandCell).buildingLevel = 2;
 			}
-			
+			else if (i == 2) {
+				makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Forest);
+				cast(grid.cells[key], IslandCell).building = Building.Sawmill;
+				cast(grid.cells[key], IslandCell).buildingLevel = 1;	
+			}
+			//crude way to make sure there's enough of each terrain type at the end of island generation
+			else if (i > 0.75 * size) {
+				if (countTerrain(Terrain.Grass) < 0.25 * size) {
+					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Grass);					
+				}
+				else if (countTerrain(Terrain.Forest) < 0.25 * size) {
+					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Forest);					
+				}
+				else if (countTerrain(Terrain.Hills) < 0.2 * size) {
+					makeCell(grid.toCellX(key), grid.toCellY(key), Terrain.Hills);					
+				}
+				else makeCell(grid.toCellX(key), grid.toCellY(key));
+			}
+			else makeCell(grid.toCellX(key), grid.toCellY(key));
 		}
 		
 	}	
@@ -217,6 +229,16 @@ import Resource;
 		}
 		
 		return buildings = count;
+	}
+	
+	public function countTerrain(terrain:Terrain) {
+		var count = 0;
+		
+		for (cell in grid.cells) {
+			if (cast(cell, IslandCell).terrain == terrain) count++;
+		}
+		
+		return count;
 	}
 	
 	//This value is recalculated every time it's used.
