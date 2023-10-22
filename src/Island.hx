@@ -293,7 +293,7 @@ import Resource;
 				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
 				
 				if (calculateCellProduction(cell) != null) {
-					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 1, 15);
+					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 1, 17);
 				}
 			}
 		}
@@ -320,7 +320,7 @@ import Resource;
 					row++;
 				}
 
-				commandWindow.write("V)iew population", 10);
+				commandWindow.write("V)iew population", 11);
 				
 			case Upgrade:
 				commandWindow.write(" U)pgrade");
@@ -331,7 +331,7 @@ import Resource;
 				
 				commandWindow.write(cost.toLeftAlignedString(), 0, 12);
 				
-				commandWindow.write("V)iew population", 10);
+				commandWindow.write("V)iew population", 11);
 				
 			case ViewPopulation:
 				commandWindow.write('$population islanders consuming ' + population * 4 + ' food');
@@ -345,11 +345,13 @@ import Resource;
 				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment() + ' (max $baseHappiness at 50% employment)', 5);
 				commandWindow.write('Food       :  ' + calculateHappinessFromFood() + ' (max $maxHappinessFromFood at 50% fish eaten)', 6);
 				commandWindow.write('Goods      :  ' + calculateHappinessFromGoods(), 7);
-				commandWindow.write('Temples    : +' + calculateHappinessFromTemples(), 8);
+				commandWindow.write('Temples    :  ' + calculateHappinessFromTemples(), 8);
 				commandWindow.write('              ' + calculateHappiness(), 9);
+				
+				commandWindow.write("V)iew island", 11);
 		}
 		
-		commandWindow.write("N)ext week", 12);
+		mainWindow.write("N)ext week", 19, 12);
 		
 		mainWindow.display();
 	}
@@ -389,7 +391,13 @@ import Resource;
 				case 'u' | 'U':	
 					commandUpgrade();
 				case 'v' | 'V':
-					menuState = MenuState.ViewPopulation;
+					switch(menuState) {
+						case Build | Upgrade:
+							menuState = ViewPopulation;
+						case ViewPopulation:
+							if (getActiveCell().building == null) menuState = Build;
+							else menuState = Upgrade;
+					}
 				default:
 			}
 			
@@ -484,7 +492,7 @@ import Resource;
 		
 		var income = new Pile();
 		
-		if (cell.building == null) return income;
+		if (cell.building == null) return null;
 		
 		switch(cell.building) {
 			
@@ -529,7 +537,7 @@ import Resource;
 				
 			default:
 				
-				return income;
+				return null;
 				
 		}
 		
