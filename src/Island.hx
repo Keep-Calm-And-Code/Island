@@ -51,9 +51,7 @@ import Resource;
 		turn = 1;
 				
 		resources = new Pile();
-		resources.add(Grain, 50);
-		resources.add(Wood, 50);
-		resources.add(Metal, 50);
+		resources.add(Grain, 50).add(Wood, 50).add(Metal, 50);
 		
 		switch (type) {
 			case Empty:
@@ -295,7 +293,7 @@ import Resource;
 				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
 				
 				if (calculateCellProduction(cell) != null) {
-					infoWindow.write('Produces ' + calculateCellProduction(cell), 1, 15);
+					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 1, 15);
 				}
 			}
 		}
@@ -361,7 +359,7 @@ import Resource;
 		
 		while (input == "") {
 			input = Sys.getChar(false);
-			trace(input);
+			//trace(input);
 		
 			switch(input) {
 				case '4':
