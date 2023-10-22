@@ -39,3 +39,5 @@ How to win:
 -----------
 
 Achieve 100 or more Happiness.
+
+The game isn't difficult, you mainly want to be patient and keep food production in pace with population. There's no lose condition, you lose by getting stuck and not producing enough food or primary resources to continue building, or not having enough room left to build Ports and Temples to increase Happiness. There's no way to demolish buildings (this is currently by design, albeit unfriendly), once something is built, that cells building slot is committed.
