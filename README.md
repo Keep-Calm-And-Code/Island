@@ -2,6 +2,8 @@
 
 This repo was created for TiMaSoMo 2023, a month long event where the tildes.net community makes stuff. I'm making a simple economic strategy game where you develop an island.
 
+You can download the Windows binary here: https://github.com/Keep-Calm-And-Code/Island/blob/main/bin/Island%20v221023.zip?raw=true
+
 This is written in Haxe. Text-only output, keyboard-only input to keep things code-focused. There are broadly two parts to the project:
 
 A text-windowing module (TextWindow.hx), this is an old personal project that treats the text console as rectangular regions (windows) within rectangular regions, which can then be e.g. moved around, made invisible. This lets me more comfortably render text in specific places rather than simply line-by-line. TextWindow.hx supports displaying colored characters via Jason Hood's ANSICON (https://github.com/adoxa/ansicon). This won't be used for this game.
