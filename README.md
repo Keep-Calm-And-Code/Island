@@ -9,6 +9,7 @@ A text-windowing module (TextWindow.hx), this is an old personal project that tr
 The game itself. Build stuff on a hex-grid island which produce stuff so you can build more stuff. I'm a hobby coder. My main aim of this project is to try to improve how I go about writing code. In particular, I'm putting this on GitHub to get in the habit of version control and to share it with other people.
 
 How to play:
+------------
 
   8
 4   6 keys move the active hex. Best to use the numpad with NumLock on.
@@ -31,5 +32,6 @@ Temples increase Happiness. Consuming Fish and Goods increases Happiness.
 
 
 How to win:
+-----------
 
 Achieve 100 or more Happiness.
