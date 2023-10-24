@@ -16,10 +16,15 @@ import Resource;
 	public var mainWindow:TextScreen;
 	
 	public var grid:HexGrid;
+
 	public var infoWindow:TextWindow;
-	
 	public var commandWindow:TextWindow;
+	public var restartGameWindow:TextWindow;
+	
 	public var menuState:MenuState;
+	
+	@IMPROVE	//this is to handle a small, singular secondary menu. So maybe a kludge like this is justified
+	public var restartGameMenuIsActive:Bool;	
 	
 	public static var cellRows = 2;
 	public static var cellCols = 3;
@@ -39,19 +44,36 @@ import Resource;
 	public var buildings:Map<Building, UInt>;
 	
 	
-	public function new(size, type:GenerationType, ?name:String) {
+	public function new(size, ?type:GenerationType, ?name:String) {
 		
 		this.mainWindow = new TextScreen(24);
 		
 		this.name = name;
 		this.size = size;
 		
+		infoWindow = new TextWindow(2, "info");
+		mainWindow.addChild(infoWindow, 5, 35);
+		
+		commandWindow = new TextWindow(20, "command");
+		mainWindow.addChild(commandWindow, 8, 35);
+		
+		restartGameWindow = new TextWindow(1, 40);
+		mainWindow.addChild(restartGameWindow, 17);
+		
+		newIsland(type);
+	}
+	
+	public function newIsland(?type = GenerationType.Random) {
+		
 		menuState = MenuState.Upgrade;
+		restartGameMenuIsActive = false;
 		
 		turn = 1;
 				
 		resources = new Pile();
 		resources.add(Grain, 50).add(Wood, 50).add(Metal, 50);
+
+		mainWindow.removeChild(name);
 		
 		switch (type) {
 			case Empty:
@@ -63,18 +85,12 @@ import Resource;
 			case Random:
 				generateRandom();
 		}
+
+		mainWindow.addChild(grid.window, 5);		
 		
 		countBuildings();
 
 		population = 3;	
-		
-		mainWindow.addChild(grid.window, 5);
-		
-		infoWindow = new TextWindow(2, "info");
-		mainWindow.addChild(infoWindow, 5, 35);
-		
-		commandWindow = new TextWindow(20, "command");
-		mainWindow.addChild(commandWindow, 8, 35);
 	}
 	
 	public function randomTerrain() {
@@ -292,10 +308,11 @@ import Resource;
 	}
 	
 	public function display() {
+		
 		write('Week $turn',  0, 4);
 		
 		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
-		write('Happiness: ' + calculateHappiness(), 0, 50);
+		write('Happiness: ' + calculateHappiness() + '   ', 0, 50);
 		
 		if (calculateHappiness() >= 100) write ('You win!', 0, 70);
 		
@@ -373,7 +390,11 @@ import Resource;
 				commandWindow.write("V)iew island", 11);
 		}
 		
-		mainWindow.write("N)ext week", 19, 12);
+		restartGameWindow.clear();
+		if (restartGameMenuIsActive) restartGameWindow.write("R)estart game?  Y)es / N)o", 0, 6);
+		else restartGameWindow.write("R)estart game", 0, 6);
+		
+		mainWindow.write("Next W)eek", 19, 6);
 		
 		mainWindow.display();
 	}
@@ -408,10 +429,16 @@ import Resource;
 					commandBuild(Building.Port);
 				case 't' | 'T':
 					commandBuild(Building.Temple);
-				case 'n' | 'N' | ' ':
-					commandNextTurn();
 				case 'u' | 'U':	
 					commandUpgrade();
+				case 'w' | 'W' | ' ':
+					commandNextTurn();
+				case 'r' | 'R':
+					if (!restartGameMenuIsActive) restartGameMenuIsActive = true;
+				case 'y' | 'Y':
+					if (restartGameMenuIsActive) newIsland();
+				case 'n' | 'N':
+					if (restartGameMenuIsActive) restartGameMenuIsActive = false;
 				case 'v' | 'V':
 					switch(menuState) {
 						case Build | Upgrade:
