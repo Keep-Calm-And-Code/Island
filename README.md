@@ -17,7 +17,7 @@ How to play:
 4   6 keys move the active hex. Best to use the numpad with NumLock on.
   2
 
-Press the first letter of the action to perform it. If an action has a cost and you can afford it, it will be prefixed with * e.g. to build a S)awmill, press 's'. You can skip to the N)ext week to just gain income.
+Press the first letter of the action to perform it. If an action has a cost and you can afford it, it will be prefixed with * e.g. to build a S)awmill, press 's'. You can skip to the Next W)eek to just gain income.
 
 Each House level is home for up to 3 islanders. Each islander eats 4 food per week, either Grain or Fish. Build:
 
