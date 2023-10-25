@@ -376,13 +376,16 @@ import Resource;
 				commandWindow.write('$population islanders consuming ' + population * 4 + ' food');
 				var grainEaten = calculateConsumption().resources[Resource.Grain];
 				var fishEaten = calculateConsumption().resources[Resource.Fish];
+				if (fishEaten == null) fishEaten = 0;
 				
 				commandWindow.write('$grainEaten Grain + $fishEaten Fish', 1, 22);
 				
 				commandWindow.write('Happiness from', 3);
 				
-				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment() + ' (max $baseHappiness at 50% employment)', 5);
-				commandWindow.write('Food       :  ' + calculateHappinessFromFood() + ' (max $maxHappinessFromFood at 50% fish eaten)', 6);
+				commandWindow.write('Employment :  ' + calculateHappinessFromEmployment(), 5);
+				commandWindow.write('(max $baseHappiness at 50% employment)', 5, 19);
+				commandWindow.write('Food       :  ' + calculateHappinessFromFood(), 6);
+				commandWindow.write('(max $maxHappinessFromFood at 50% fish eaten)', 6, 19);
 				commandWindow.write('Goods      :  ' + calculateHappinessFromGoods(), 7);
 				commandWindow.write('Temples    :  ' + calculateHappinessFromTemples(), 8);
 				commandWindow.write('              ' + calculateHappiness(), 9);
