@@ -552,7 +552,7 @@ import Resource;
 				var base = 10;
 				for (key in cell.neighbors) {
 					if (getCell(key).building == Building.Farm) {
-						base++;
+						base += 2;
 					}
 				}
 				
@@ -562,7 +562,7 @@ import Resource;
 				var base = 10;
 				for (key in cell.neighbors) {
 					if (getCell(key).building == Building.Farm) {
-						base++;
+						base += 2;
 					}
 				}
 				
@@ -572,7 +572,7 @@ import Resource;
 				var base = 10;
 				for (key in cell.neighbors) {
 					if (getCell(key).building == Building.Mine) {
-						base++;
+						base += 2;
 					}
 				}
 				
