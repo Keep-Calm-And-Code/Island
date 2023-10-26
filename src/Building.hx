@@ -64,15 +64,15 @@ function CostToBuild(b:Building, n:Int) {  //n: current number of buildings)
 			return cost;		
 			
 		case Building.Port:
-			cost.add(Resource.Wood, 8 + 4 * n * (n + 1));
-			cost.add(Resource.Metal, 6 + 3 * n * (n + 1));
-			if (n >= 3) cost.add(Resource.Tools, 4 * (n - 2) * (n - 1));
+			cost.add(Resource.Wood, 6 + 6 * n * (n + 1));
+			cost.add(Resource.Metal, 5 + 3 * n * (n + 1));
+			if (n >= 3) cost.add(Resource.Tools, 4 * n * n);
 			return cost;
 			
 		case Building.Temple:
 			cost.add(Resource.Grain, 5 + 5 * n * (n + 2));
 			cost.add(Resource.Wood, 10 + 3 * n * (n + 1));			
-			if (n >= 3) cost.add(Resource.Metal, 10 + 4 * n * (n - 1));			
+			if (n >= 3) cost.add(Resource.Metal, 10 + 6 * n * (n - 1));			
 			return cost;
 			
 	}

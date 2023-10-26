@@ -13,7 +13,7 @@ class Main
 	
 	static function main() 
 	{
-		var island = new Island(14, Island.GenerationType.Random, "Home");
+		var island = new Island(13, Island.GenerationType.Random, "Home");
 		
 		island.display();
 		
