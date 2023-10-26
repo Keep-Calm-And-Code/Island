@@ -326,13 +326,18 @@ import Resource;
 		if (active != null) {
 			var cell = cast(grid.cells[active], IslandCell);
 			
-			infoWindow.write(terrainNames[cell.terrain]);
+			infoWindow.write(terrainNames[cell.terrain], 1);
 			
 			if (cell.building != null) {
-				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building], 1);
+				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building]);
 				
 				if (calculateCellProduction(cell) != null) {
-					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 1, 17);
+					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 0, 19);
+					
+					var adjacentBuildings = countNeighborsWithBuilding(cell);
+					if (adjacentBuildings > 0) {
+						infoWindow.write('bonus ' + 20 * adjacentBuildings + '% from adjacency', 1, 16);
+					}
 				}
 			}
 		}
@@ -538,6 +543,21 @@ import Resource;
 		return calculatePrimaryProduction().addPile(calculateSecondaryProduction()).subtractPile(calculateConsumption());
 	}
 	
+	public function countNeighborsWithBuilding(?cell:IslandCell, ?building:Building) {
+		if (cell == null) cell = getActiveCell();
+		
+		//building may still end up null. Should I allow this?
+		if (building == null) building = cell.building;
+		
+		var count = 0;
+		
+		for (key in cell.neighbors) {
+			if (getCell(key).building == building) count++;
+		}
+		
+		return count;
+	}
+	
 	public function calculateCellProduction(?cell:IslandCell):Pile {
 		
 		if (cell == null) cell = getActiveCell();
@@ -549,34 +569,16 @@ import Resource;
 		switch(cell.building) {
 			
 			case Building.Farm:
-				var base = 10;
-				for (key in cell.neighbors) {
-					if (getCell(key).building == Building.Farm) {
-						base += 2;
-					}
-				}
+
+				return income.add(Resource.Grain, (10 + 2 * countNeighborsWithBuilding(cell)) * cell.buildingLevel);
 				
-				return income.add(Resource.Grain, base * cell.buildingLevel);
-			
 			case Building.Sawmill:
-				var base = 10;
-				for (key in cell.neighbors) {
-					if (getCell(key).building == Building.Farm) {
-						base += 2;
-					}
-				}
 				
-				return income.add(Resource.Wood, base * cell.buildingLevel);				
+				return income.add(Resource.Wood, (10 + 2 * countNeighborsWithBuilding(cell)) * cell.buildingLevel);
 			
 			case Building.Mine:
-				var base = 10;
-				for (key in cell.neighbors) {
-					if (getCell(key).building == Building.Mine) {
-						base += 2;
-					}
-				}
-				
-				return income.add(Resource.Metal, base * cell.buildingLevel);
+
+				return income.add(Resource.Metal, (10 + 2 * countNeighborsWithBuilding(cell)) * cell.buildingLevel);
 			
 			case Building.Blacksmith:
 				
