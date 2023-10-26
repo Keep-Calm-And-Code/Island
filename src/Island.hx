@@ -331,12 +331,26 @@ import Resource;
 			if (cell.building != null) {
 				infoWindow.write('Level ' + cell.buildingLevel + " " + Building.names[cell.building]);
 				
-				if (calculateCellProduction(cell) != null) {
+				if (cell.building == Building.Temple) {
+					infoWindow.write('Increases Happiness by ' + 3 * cell.buildingLevel, 0, 19);
+					
+					var adjacentHouses = countNeighborsWithBuilding(cell, Building.House);
+					if (adjacentHouses > 0) {
+						infoWindow.write(2 * adjacentHouses + ' from adjacent Houses', 1, 19);
+					}
+				}
+				else if (calculateCellProduction(cell) != null) {
 					infoWindow.write('Produces ' + calculateCellProduction(cell).toLeftAlignedString(), 0, 19);
 					
-					var adjacentBuildings = countNeighborsWithBuilding(cell);
-					if (adjacentBuildings > 0) {
-						infoWindow.write('bonus ' + 20 * adjacentBuildings + '% from adjacency', 1, 16);
+					switch (cell.building) {
+						
+						case Building.Farm | Building.Sawmill | Building.Mine:
+							var adjacentBuildings = countNeighborsWithBuilding(cell);
+							if (adjacentBuildings > 0) {
+								infoWindow.write('bonus ' + 20 * adjacentBuildings + '% from adjacency', 1, 16);
+							}
+							
+						default:
 					}
 				}
 			}
@@ -699,7 +713,15 @@ import Resource;
 	}
 	
 	public function calculateHappinessFromTemples() {
-		return 3 * buildings[Building.Temple];
+		var total = 3 * buildings[Building.Temple];
+		
+		for (key in grid.cells.keys()) {
+			if (getCell(key).building == Building.Temple) {
+				total += 2 * countNeighborsWithBuilding(getCell(key), Building.House); 
+			}
+		}
+		
+		return total;
 	}
 	
 	public function calculateHappiness() {
