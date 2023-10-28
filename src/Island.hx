@@ -14,6 +14,7 @@ import Resource;
 	public var name:String;
 	
 	public var mainWindow:TextScreen;
+	public var newGameWindow:TextScreen;
 	
 	public var grid:HexGrid;
 
@@ -44,12 +45,12 @@ import Resource;
 	public var buildings:Map<Building, UInt>;
 	
 	
-	public function new(size, ?type:GenerationType, ?name:String) {
+	public function new(?name:String) {
 		
-		this.mainWindow = new TextScreen(24);
+		mainWindow = new TextScreen(25);
+		newGameWindow = new TextScreen(25);
 		
 		this.name = name;
-		this.size = size;
 		
 		infoWindow = new TextWindow(2, "info");
 		mainWindow.addChild(infoWindow, 5, 35);
@@ -60,10 +61,10 @@ import Resource;
 		restartGameWindow = new TextWindow(1, 40);
 		mainWindow.addChild(restartGameWindow, 17);
 		
-		newIsland(type);
+		newIsland();
 	}
 	
-	public function newIsland(?type = GenerationType.Random) {
+	public function newIsland() {
 		
 		menuState = MenuState.Upgrade;
 		restartGameMenuIsActive = false;
@@ -75,17 +76,31 @@ import Resource;
 
 		mainWindow.removeChild(name);
 		
-		switch (type) {
-			case Empty:
-				generateEmpty();
-			case OneCell:
-				generateOneCell();
-			case Filled:
-				generateFilled();
-			case Random:
-				generateRandom();
+		newGameWindow.clear();
+		newGameWindow.write("E)asy   island (16 cells)", 10, 30);
+		newGameWindow.write("M)edium island (14 cells)", 12, 30);
+		newGameWindow.write("H)ard   island (13 cells)", 14, 30);
+		newGameWindow.display();
+		
+		var input:TextScreen.ASCIIChar = "";
+		
+		while (input == "") {
+			input = Sys.getChar(false);
+		
+			switch(input) {
+				case 'e' | 'E':
+					size = 16;
+				case 'm' | 'M':
+					size = 14;
+				case 'h' | 'H':
+					size = 13;
+				default:
+					input = "";
+			}
 		}
-
+		
+		generateRandom(size);
+		
 		mainWindow.addChild(grid.window, 5);		
 		
 		countBuildings();
@@ -163,7 +178,7 @@ import Resource;
 		
 	}
 	
-	public function generateRandom() {
+	public function generateRandom(size:Int) {
 		var semiperimeter = Math.ceil(2 * Math.sqrt(2 * size));  //estimates a comfortably large grid in which to generate the island
 		var gridRows = Math.floor(semiperimeter / 2);
 		var gridCols = semiperimeter - gridRows;
