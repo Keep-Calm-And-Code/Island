@@ -287,12 +287,19 @@ import Resource;
 	public function isValidLocation(b:Building, ?key:String) {
 		if (key == null) key = grid.activeCellKey;
 		
-		if (b == Building.Farm && getCell(key).terrain != Terrain.Grass) return false;
-		if (b == Building.Sawmill && getCell(key).terrain != Terrain.Forest) return false;
-		if (b == Building.Mine && getCell(key).terrain != Terrain.Hills) return false;
+		var terrain = getCell(key).terrain;
 		
-		if (b == Building.Port && 
-			(getCell(key).terrain != Terrain.Grass || !isCoastCellKey(key))) return false; 
+		switch(b) {
+			case Building.Farm:
+				if (terrain != Terrain.Grass) return false;
+			case Building.Sawmill:
+				if (terrain != Terrain.Forest) return false;
+			case Building.Mine:
+				if (terrain != Terrain.Hills) return false;
+			case Building.Port:
+				if (terrain != Terrain.Grass || !isCoastCellKey(key)) return false;
+			default:
+		}
 		
 		return true;
 	}
