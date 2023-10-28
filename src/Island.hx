@@ -426,7 +426,6 @@ import Resource;
 		
 		while (input == "") {
 			input = Sys.getChar(false);
-			//trace(input);
 		
 			switch(input) {
 				case '4':
@@ -437,6 +436,21 @@ import Resource;
 					commandMove(Direction.Up);
 				case '2':
 					commandMove(Direction.Down);
+				//ANSI code 224, indicating arrow key pressed. This is a hack for just this game
+				case '+':
+					//pressing an arrow key will send a second ANSI code determining which key was pressed
+					var dir = Sys.getChar(false);
+					switch(dir) {
+						case 75:
+							commandMove(Direction.Left);
+						case 77:
+							commandMove(Direction.Right);
+						case 72:
+							commandMove(Direction.Up);
+						case 80:
+							commandMove(Direction.Down);
+						default:
+					}
 				case 'h' | 'H':	
 					commandBuild(Building.House);
 				case 'f' | 'F':

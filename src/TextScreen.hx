@@ -532,6 +532,11 @@ abstract ASCIIChar(String) from String to String {
 				return new ASCIIChar('y');
 			case 122:
 				return new ASCIIChar('z');
+			//this is a temporary hack
+			//ANSI code 224 corresponds to an arrow key being pressed, not '+'
+			//there's a follow-up code that determines which arrow key
+			case 224:
+				return new ASCIIChar('+');
 			default:
 				return new ASCIIChar('other');
 		}
