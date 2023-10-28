@@ -48,7 +48,11 @@ import Resource;
 	public function new(?name:String) {
 		
 		mainWindow = new TextScreen(25);
+		
 		newGameWindow = new TextScreen(25);
+		newGameWindow.write("E)asy   island (16 cells)", 10, 30);
+		newGameWindow.write("M)edium island (14 cells)", 12, 30);
+		newGameWindow.write("H)ard   island (13 cells)", 14, 30);
 		
 		this.name = name;
 		
@@ -76,10 +80,6 @@ import Resource;
 
 		mainWindow.removeChild(name);
 		
-		newGameWindow.clear();
-		newGameWindow.write("E)asy   island (16 cells)", 10, 30);
-		newGameWindow.write("M)edium island (14 cells)", 12, 30);
-		newGameWindow.write("H)ard   island (13 cells)", 14, 30);
 		newGameWindow.display();
 		
 		var input:TextScreen.ASCIIChar = "";
