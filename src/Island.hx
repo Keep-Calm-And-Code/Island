@@ -374,6 +374,10 @@ import Resource;
 								infoWindow.write('bonus ' + 20 * adjacentBuildings + '% from adjacency', 1, 16);
 							}
 							
+						case Building.Blacksmith:
+							var prod = calculateCellProduction(cell).resources[Resource.Tools];
+							infoWindow.write('using $prod Wood and $prod Metal', 1, 15);
+							
 						default:
 					}
 				}
@@ -446,6 +450,7 @@ import Resource;
 	}
 	
 	public function inputLoop() {
+		
 		var input:TextScreen.ASCIIChar = "";
 		
 		while (input == "") {
@@ -516,8 +521,9 @@ import Resource;
 			//to do additional things which isn't invoked in the usual display() heirarchy
 			@IMPROVE
 			grid.window.clear();  
-			
+				
 			display();
+				
 			input = "";
 		}
 	}
