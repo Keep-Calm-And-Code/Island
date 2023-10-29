@@ -52,7 +52,7 @@ import Resource;
 		newGameWindow = new TextScreen(25);
 		newGameWindow.write("E)asy   island (16 cells)", 10, 30);
 		newGameWindow.write("M)edium island (14 cells)", 12, 30);
-		newGameWindow.write("H)ard   island (13 cells)", 14, 30);
+		newGameWindow.write("H)ard   island (12 cells)", 14, 30);
 		
 		this.name = name;
 		
@@ -93,7 +93,7 @@ import Resource;
 				case 'm' | 'M':
 					size = 14;
 				case 'h' | 'H':
-					size = 13;
+					size = 12;
 				default:
 					input = "";
 			}
@@ -331,6 +331,8 @@ import Resource;
 	
 	public function display() {
 		
+		mainWindow.clear();
+		
 		write('Week $turn',  0, 4);
 		
 		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
@@ -339,7 +341,7 @@ import Resource;
 		if (calculateHappiness() >= 100) write ('You win!', 0, 70);
 		
 		write('$resources', 2, 8);
-		var income = calculateIncome().toResourceAlignedString("+", false);
+		var income = calculateIncome().toResourceAlignedString(false, true);
 		write('$income', 3, 7);
 
 		

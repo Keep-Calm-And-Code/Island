@@ -50,15 +50,16 @@ class Pile {
 	}
 	
 	public function toString() {
-		return toResourceAlignedString("");
+		return toResourceAlignedString();
 	}
 	
-	public function toLeftAlignedString(?prefix:String = "", ?isResourceNameVisible = true) {
+	public function toLeftAlignedString(?isResourceNameVisible = true, ?isIncomeString = false) {
 		var all = "";
 		
 		for (r in resources.keys()) {
 			
-			var s = prefix + resources[r] + " ";
+			var s = resources[r] + " ";
+			if (isIncomeString && resources[r] >= 0) s = '+' + s;
 			if (isResourceNameVisible) s += names[r];
 			
 			var padLength = Utils.maxInt((10 - s.length), 0);
@@ -72,14 +73,17 @@ class Pile {
 		return all;
 	}
 	
-	public function toResourceAlignedString(?prefix:String = "", ?isResourceNameVisible = true) {
+	public function toResourceAlignedString(?isResourceNameVisible = true, ?isIncomeString = false) {
 		var all = "";
 		
 		for (r in Type.allEnums(Resource)) {
 			
 			var s = "";
 			if (resources.exists(r)) {
-				s = prefix + resources[r] + " ";
+				s = resources[r] + " ";
+				if (isIncomeString && resources[r] >= 0) {
+					s = '+' + s;
+				}
 				if (isResourceNameVisible) s += names[r];
 			}
 			
