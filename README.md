@@ -34,6 +34,8 @@ Blacksmiths turn Wood and Metal into Tools, which are needed to upgrade building
 
 Temples increase Happiness. Consuming Fish and Goods increases Happiness.
 
+Each building that produces stuff requires islanders to work at its Jobs. 1 Job per building level, and 1 population needed per Job. Production falls if there are not enough workers.
+
 V)iew population to see more details about Happiness and food consumption.
 
 
@@ -42,4 +44,4 @@ How to win:
 
 Achieve 100 or more Happiness.
 
-The game isn't difficult, you mainly want to be patient and keep food production in pace with population. There's no lose condition, you lose by getting stuck and not producing enough food or primary resources to continue building, or not having enough room left to build Ports and Temples to increase Happiness. There's no way to demolish buildings (this is currently by design, albeit unfriendly), once something is built, that cells building slot is committed.
+The game isn't difficult, you mainly want to be patient and keep population in pace with food production and jobs. There's no lose condition, you lose by getting stuck and not producing enough food or primary resources to continue building, or not having enough room left to build Ports and Temples to increase Happiness. There's no way to demolish buildings (this is currently by design, albeit unfriendly), once something is built, that cells building slot is committed.
