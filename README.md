@@ -2,9 +2,9 @@
 
 This repo was created for TiMaSoMo 2023, a month long event where the tildes.net community makes stuff. I'm making a simple economic strategy game where you develop an island.
 
-Here is the Windows version running via the Hashlink interpreter: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island/Island.v291023.hashlink.zip Unzip to a folder and run Island.bat to play.
+Here is the Windows version running via the Hashlink interpreter: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island/Island.v041123.hashlink.zip Unzip to a folder and run Island.bat to play.
 
-Here is the compiled Windows version: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island.hxcpp/Island.v291023.hxcpp.zip Unzip to a folder and run Main.exe to play.
+Here is the compiled Windows version: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island.hxcpp/Island.v041123.hxcpp.zip Unzip to a folder and run Main.exe to play.
 
 This is written in Haxe. Text-only output, keyboard-only input to keep things code-focused. There are broadly two parts to the project:
 
