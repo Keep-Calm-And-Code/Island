@@ -53,46 +53,46 @@ class Pile {
 		return toResourceAlignedString();
 	}
 	
-	public function toLeftAlignedString(?isResourceNameVisible = true, ?isIncomeString = false) {
+	public function toLeftAlignedString(?sectionLength = 10, ?isResourceNameVisible = true, ?isIncomeString = false) {
 		var all = "";
 		
 		for (r in resources.keys()) {
 			
-			var s = resources[r] + " ";
-			if (isIncomeString && resources[r] >= 0) s = '+' + s;
-			if (isResourceNameVisible) s += names[r];
+			var str = resources[r] + " ";
+			if (isIncomeString && resources[r] >= 0) str = '+' + str;
+			if (isResourceNameVisible) str += names[r];
 			
-			var padLength = Utils.maxInt((10 - s.length), 0);
+			var padLength = Utils.maxInt((sectionLength - str.length), 0);
 			for (i in 0...padLength) {
-				s += " ";
+				str += " ";
 			}
 			
-			all += s;
+			all += str;
 		}
 		
 		return all;
 	}
 	
-	public function toResourceAlignedString(?isResourceNameVisible = true, ?isIncomeString = false) {
+	public function toResourceAlignedString(?sectionLength = 12, ?isResourceNameVisible = true, ?isIncomeString = false) {
 		var all = "";
 		
 		for (r in Type.allEnums(Resource)) {
 			
-			var s = "";
+			var str = "";
 			if (resources.exists(r)) {
-				s = resources[r] + " ";
+				str = resources[r] + " ";
 				if (isIncomeString && resources[r] >= 0) {
-					s = '+' + s;
+					str = '+' + str;
 				}
-				if (isResourceNameVisible) s += names[r];
+				if (isResourceNameVisible) str += names[r];
 			}
 			
-			var padLength = Utils.maxInt((10 - s.length), 0);
+			var padLength = Utils.maxInt((sectionLength - str.length), 0);
 			for (i in 0...padLength) {
-				s += " ";
+				str += " ";
 			}
 			
-			all += s;
+			all += str;
 		}
 		
 		return all;
@@ -187,7 +187,21 @@ class Pile {
 		return product;
 	}
 	
+
+	
 }
 
 
 
+
+@:forward
+@:access(Pile)
+abstract AbstractPile(Pile) from Pile {
+
+	@:arrayAccess
+	public inline function arrayWrite(r:Resource, v:Int) {
+		this.resources[r] = v;
+		return v;
+	}
+	
+}

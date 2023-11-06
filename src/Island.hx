@@ -46,15 +46,21 @@ import Resource;
 	
 	
 	public function new(?name:String) {
+				
+		this.name = name;
+		
+		newIsland();
+	}
+	
+	public function newIsland() {
 		
 		mainWindow = new TextScreen(25);
 		
 		newGameWindow = new TextScreen(25);
-		newGameWindow.write("E)asy   island (16 cells)", 10, 30);
-		newGameWindow.write("M)edium island (14 cells)", 12, 30);
-		newGameWindow.write("H)ard   island (12 cells)", 14, 30);
-		
-		this.name = name;
+		newGameWindow.write("Island - TiMaSoMo 2023 Version", 9, 26);
+		newGameWindow.write("E)asy   island (18 cells)", 12, 28);
+		newGameWindow.write("M)edium island (14 cells)", 14, 28);
+		newGameWindow.write("H)ard   island (12 cells)", 16, 28);
 		
 		infoWindow = new TextWindow(2, "info");
 		mainWindow.addChild(infoWindow, 5, 35);
@@ -63,12 +69,9 @@ import Resource;
 		mainWindow.addChild(commandWindow, 8, 35);
 		
 		restartGameWindow = new TextWindow(1, 40);
-		mainWindow.addChild(restartGameWindow, 17);
+		mainWindow.addChild(restartGameWindow, 18);
 		
-		newIsland();
-	}
-	
-	public function newIsland() {
+		mainWindow.clear();
 		
 		menuState = MenuState.Upgrade;
 		restartGameMenuIsActive = false;
@@ -78,7 +81,7 @@ import Resource;
 		resources = new Pile();
 		resources.add(Grain, 50).add(Wood, 50).add(Metal, 50);
 
-		mainWindow.removeChild(name);
+		mainWindow.removeChild("grid");
 		
 		newGameWindow.display();
 		
@@ -89,7 +92,7 @@ import Resource;
 		
 			switch(input) {
 				case 'e' | 'E':
-					size = 16;
+					size = 18;
 				case 'm' | 'M':
 					size = 14;
 				case 'h' | 'H':
@@ -183,7 +186,7 @@ import Resource;
 		var gridRows = Math.floor(semiperimeter / 2);
 		var gridCols = semiperimeter - gridRows;
 	
-		grid = new HexGrid(gridRows, gridCols, cellRows, cellCols, name);
+		grid = new HexGrid(gridRows, gridCols, cellRows, cellCols, "grid");
 
 		var x = Math.floor(gridCols / 2);	var y = Math.floor(gridRows / 2);
 		makeCell(x, y);
@@ -333,10 +336,10 @@ import Resource;
 		
 		mainWindow.clear();
 		
-		write('Week $turn',  0, 4);
+		write('Week $turn',  0, 6);
 		
-		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 20);
-		write('Happiness: ' + calculateHappiness() + '   ', 0, 50);
+		write('Islanders: $population / ' + countJobs() + ' jobs', 0, 22);
+		write('Happiness: ' + calculateHappiness() + '   ', 0, 52);
 		
 		if (calculateHappiness() >= 100) write ('You win!', 0, 70);
 		
@@ -406,7 +409,7 @@ import Resource;
 					row++;
 				}
 
-				commandWindow.write("V)iew population", 11);
+				commandWindow.write("V)iew population", 12);
 				
 			case Upgrade:
 				commandWindow.write(" U)pgrade");
@@ -417,7 +420,7 @@ import Resource;
 				
 				commandWindow.write(cost.toLeftAlignedString(), 0, 12);
 				
-				commandWindow.write("V)iew population", 11);
+				commandWindow.write("V)iew population", 12);
 				
 			case ViewPopulation:
 				commandWindow.write('$population islanders consuming ' + population * 4 + ' food');
@@ -437,14 +440,14 @@ import Resource;
 				commandWindow.write('Temples    :  ' + calculateHappinessFromTemples(), 8);
 				commandWindow.write('              ' + calculateHappiness(), 9);
 				
-				commandWindow.write("V)iew island", 11);
+				commandWindow.write("V)iew island", 12);
 		}
 		
 		restartGameWindow.clear();
 		if (restartGameMenuIsActive) restartGameWindow.write("R)estart game?  Y)es / N)o", 0, 6);
 		else restartGameWindow.write("R)estart game", 0, 6);
 		
-		mainWindow.write("Next W)eek", 19, 6);
+		mainWindow.write("Next W)eek", 20, 6);
 		
 		mainWindow.display();
 	}

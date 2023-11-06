@@ -12,7 +12,7 @@ class Main
 {
 	
 	static function main() 
-	{
+	{	
 		var island = new Island("Home");
 		
 		island.display();
