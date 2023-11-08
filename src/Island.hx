@@ -546,9 +546,10 @@ import Resource;
 			isValidLocation(b) &&
 			resources.hasPile(costToBuild(b))) {
 			
+			resources.cutoffSubtractPile(costToBuild(b));
+			
 			commandNextTurn();	
-				
-			resources.subtractPile(costToBuild(b));
+			
 			getActiveCell().building = b;
 			getActiveCell().buildingLevel = 1;
 			buildings[b]++;
@@ -561,9 +562,10 @@ import Resource;
 		if (menuState == MenuState.Upgrade &&
 			resources.hasPile(costToUpgrade())) {
 				
+			resources.cutoffSubtractPile(costToUpgrade());
+			
 			commandNextTurn();
 
-			resources.subtractPile(costToUpgrade());
 			getActiveCell().buildingLevel++;
 			buildings[getActiveCell().building]++;
 	
