@@ -174,6 +174,12 @@ class HexGrid extends Grid
 		var y = toCellY(key);
 		if (y < 0 || y >= gridRows) return false;
 		
+		//the hex grid is not a perfect parallelogram. The acute corners are truncated. 
+		//This keeps the island a little more centered
+		if (x == 0 && y == 0) return false;
+		
+		if (x == gridCols - 1 && y == gridRows - 1) return false;  
+		
 		return true;
 	}
 	
