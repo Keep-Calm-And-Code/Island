@@ -233,7 +233,7 @@ class HexGrid extends Grid
 		return [for (str in cells.keys()) Point2D.pointFromString(str)];
 	}
 	
-	public function distanceSquaredToCell(from:String, to:String):Null<Float> {
+	public function distanceSquaredToCell(from:String, to:String):Null<Int> {
 		if (!isValidPoint(from)) return null;
 		if (!isValidPoint(to)) return null;
 		
@@ -292,6 +292,16 @@ class HexGrid extends Grid
 				return dy < 0;
 			case Down:
 				return dy > 0;
+			
+			case DownRight:
+				return dx > 2 * -dy;
+			case UpLeft:	//FIX
+				return dx < 2 * -dy;
+				
+			case DownLeft:
+				return (dx + dy) > 2 * dx;
+			case UpRight:	//FIX
+				return (dx + dy) < 2 * dx;
 		}
 
 	}
@@ -300,10 +310,30 @@ class HexGrid extends Grid
 		if (!isValidPoint(p)) return null;
 		
 		var closestCell = p;
-		var closestDistanceSquared:Null<Float> = 0;
-		var closestYDiff = 0;	//this is used to keep the selection consistent
-		@IMPROVE
-		//need closestXDiff also. 
+		var closestDistanceSquared:Null<Int> = 0;
+		var closestAngle:Float = 0;
+		
+		var idealAngle;
+		
+		switch(dir) {
+			case Direction.Up:
+				idealAngle = Math.PI * 2.99 / 2; 	//up, but slightly inclined to the left to break ties to the left
+			case Direction.Down:
+				idealAngle = Math.PI * 0.99 / 2;	//up, but slightly inclined to the right to break ties to the right
+			case Direction.Left:
+				idealAngle = Math.PI;
+			case Direction.Right:
+				idealAngle = 0;
+			
+			case Direction.UpLeft:
+				idealAngle = Math.PI * 4 / 3;
+			case Direction.UpRight:
+				idealAngle = Math.PI * 5.01 / 3;
+			case Direction.DownLeft:
+				idealAngle = Math.PI * 2.01 / 3;
+			case Direction.DownRight:
+				idealAngle = Math.PI * 0.99 / 3;
+		}
 		
 		var x = toCellX(p);
 		var y = toCellY(p);
@@ -315,15 +345,14 @@ class HexGrid extends Grid
 					if (closestDistanceSquared == 0 || distanceSquaredToCell(p, q) < closestDistanceSquared) {
 						closestCell = q;
 						closestDistanceSquared = distanceSquaredToCell(p, q);
-						closestYDiff = toCellY(q) - toCellY(p);
+						closestAngle = Math.abs((angleToCell(p, q) - idealAngle));
 					}
 					else if (distanceSquaredToCell(p, q) == closestDistanceSquared) {
-						var yDiff = toCellY(q) - toCellY(p);
-						if (Math.abs(yDiff) < Math.abs(closestYDiff) || 	//to break ties, for consistent behaviour, always favor cells in the positive y direction
-							(Math.abs(yDiff) == Math.abs(closestYDiff)) && yDiff > 0) {
-								closestCell = q;
-								closestDistanceSquared = distanceSquaredToCell(p, q);
-								closestYDiff = toCellY(q) - toCellY(p);
+						
+						if ( Math.abs((angleToCell(p, q) - idealAngle)) <= closestAngle ) {
+							closestCell = q;
+							closestDistanceSquared = distanceSquaredToCell(p, q);
+							closestAngle = Math.abs((angleToCell(p, q) - idealAngle));
 						}
 					}
 				}
@@ -333,22 +362,6 @@ class HexGrid extends Grid
 		return closestCell;
 	}
 	
-	
-	public function closestCellLeft(p:String) {
-		return closestCellInDirection(p, Direction.Left);
-	}
-	
-	public function closestCellRight(p:String) {
-		return closestCellInDirection(p, Direction.Right);
-	}
-	
-	public function closestCellUp(p:String) {
-		return closestCellInDirection(p, Direction.Up);
-	}
-	
-	public function closestCellDown(p:String) {
-		return closestCellInDirection(p, Direction.Down);
-	}
 	
 	
 	//returns array of cell keys that could be neighbors but a
@@ -471,6 +484,11 @@ enum Direction {
 	Right;
 	Up;
 	Down;
+	
+	UpLeft;
+	UpRight;
+	DownLeft;
+	DownRight;
 }
 
 

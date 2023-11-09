@@ -468,6 +468,16 @@ import Resource;
 					commandMove(Direction.Up);
 				case '2':
 					commandMove(Direction.Down);
+					
+				case '7':
+					commandMove(Direction.UpLeft);
+				case '9':
+					commandMove(Direction.UpRight);
+				case '1':
+					commandMove(Direction.DownLeft);
+				case '3':
+					commandMove(Direction.DownRight);
+					
 				//ANSI code 224, indicating arrow key pressed. This is a hack for just this game
 				case '+':
 					//pressing an arrow key will send a second ANSI code determining which key was pressed
