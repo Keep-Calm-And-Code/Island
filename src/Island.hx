@@ -25,7 +25,7 @@ import Resource;
 	public var menuState:MenuState;
 	
 	@IMPROVE	//this is to handle a small, singular secondary menu. So maybe a kludge like this is justified
-	public var restartGameMenuIsActive:Bool;	
+	public var restartGameMenuState:RestartGameMenuState;	
 	
 	public static var cellRows = 2;
 	public static var cellCols = 3;
@@ -68,13 +68,13 @@ import Resource;
 		commandWindow = new TextWindow(20, "command");
 		mainWindow.addChild(commandWindow, 8, 35);
 		
-		restartGameWindow = new TextWindow(1, 40);
+		restartGameWindow = new TextWindow(1, 50);
 		mainWindow.addChild(restartGameWindow, 18);
 		
 		mainWindow.clear();
 		
 		menuState = MenuState.Upgrade;
-		restartGameMenuIsActive = false;
+		restartGameMenuState = RestartGameMenuState.Default;
 		
 		turn = 1;
 				
@@ -444,8 +444,15 @@ import Resource;
 		}
 		
 		restartGameWindow.clear();
-		if (restartGameMenuIsActive) restartGameWindow.write("R)estart game?  Y)es / N)o", 0, 6);
-		else restartGameWindow.write("R)estart game", 0, 6);
+		
+		switch(restartGameMenuState) {
+			case Restart:
+				restartGameWindow.write("R)estart game?  Y)es / N)o", 0, 6);
+			case Quit:
+				restartGameWindow.write("R)estart game   Q)uit game?  Y)es / N)o", 0, 6);
+			case Default:
+				restartGameWindow.write("R)estart game   Q)uit game", 0, 6);
+		}
 		
 		mainWindow.write("Next W)eek", 20, 6);
 		
@@ -512,11 +519,16 @@ import Resource;
 				case 'w' | 'W' | ' ':
 					commandNextTurn();
 				case 'r' | 'R':
-					if (!restartGameMenuIsActive) restartGameMenuIsActive = true;
+					if (restartGameMenuState == Default || restartGameMenuState == Quit) 
+						restartGameMenuState = Restart;
+				case 'q' | 'Q':
+					if (restartGameMenuState == Default) restartGameMenuState = Quit;
 				case 'y' | 'Y':
-					if (restartGameMenuIsActive) newIsland();
+					if (restartGameMenuState == Restart) newIsland();
+					else if (restartGameMenuState == Quit) return;
 				case 'n' | 'N':
-					if (restartGameMenuIsActive) restartGameMenuIsActive = false;
+					if (restartGameMenuState == Restart || restartGameMenuState == Quit) 
+						restartGameMenuState = Default;
 				case 'v' | 'V':
 					switch(menuState) {
 						case Build | Upgrade:
@@ -803,6 +815,12 @@ enum MenuState {
 	Build;
 	Upgrade;
 	ViewPopulation;
+}
+
+enum RestartGameMenuState {
+	Restart;
+	Quit;
+	Default;
 }
 
 
