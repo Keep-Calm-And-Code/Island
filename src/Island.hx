@@ -24,7 +24,6 @@ import Resource;
 	
 	public var menuState:MenuState;
 	
-	@IMPROVE	//this is to handle a small, singular secondary menu. So maybe a kludge like this is justified
 	public var restartGameMenuState:RestartGameMenuState;	
 	
 	public static var cellRows = 2;
@@ -447,14 +446,14 @@ import Resource;
 		
 		switch(restartGameMenuState) {
 			case Restart:
-				restartGameWindow.write("R)estart game?  Y)es / N)o", 0, 6);
+				restartGameWindow.write("R)estart?  Y)es / N)o", 0, 4);
 			case Quit:
-				restartGameWindow.write("R)estart game   Q)uit game?  Y)es / N)o", 0, 6);
+				restartGameWindow.write("R)estart   Q)uit?  Y)es / N)o", 0, 4);
 			case Default:
-				restartGameWindow.write("R)estart game   Q)uit game", 0, 6);
+				restartGameWindow.write("R)estart   Q)uit", 0, 4);
 		}
 		
-		mainWindow.write("Next W)eek", 20, 6);
+		mainWindow.write("Next W)eek", 20, 4);
 		
 		mainWindow.display();
 	}

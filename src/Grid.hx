@@ -253,7 +253,7 @@ class HexGrid extends Grid
 	}
 	
 	
-	//positive x-axis extends to the right
+	//positive x-axis extends to the right, is 0 radians
 	//positive y-axis extends diagonally 60 degrees down and to the right
 	public function angleToCell(from:String, to:String):Null<Float> {
 		if (!isValidPoint(from)) return null;
@@ -332,7 +332,7 @@ class HexGrid extends Grid
 				idealAngle = 0;
 			
 			case Direction.UpLeft:
-				idealAngle = Math.PI * 4 / 3;
+				idealAngle = Math.PI * 3.99 / 3;
 			case Direction.UpRight:
 				idealAngle = Math.PI * 5.01 / 3;
 			case Direction.DownLeft:
