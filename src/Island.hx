@@ -53,20 +53,22 @@ import Resource;
 	
 	public function newIsland() {
 		
-		mainWindow = new TextScreen(25);
+		blankLines();
 		
-		newGameWindow = new TextScreen(25);
-		newGameWindow.write("Island - A game by KeepCalmAndDream", 9, 23);
-		newGameWindow.write("E)asy   island (18 cells)", 12, 28);
-		newGameWindow.write("M)edium island (14 cells)", 14, 28);
-		newGameWindow.write("H)ard   island (12 cells)", 16, 28);
+		mainWindow = new TextScreen(22);
 		
-		newGameWindow.write("for TiMaSoMo 2023. v101123", 24, 50);
+		newGameWindow = new TextScreen(22);
+		newGameWindow.write("Island - A game by KeepCalmAndDream", 5, 23);
+		newGameWindow.write("E)asy   island (18 cells)", 8, 28);
+		newGameWindow.write("M)edium island (14 cells)", 10, 28);
+		newGameWindow.write("H)ard   island (12 cells)", 12, 28);
+		
+		newGameWindow.write("for TiMaSoMo 2023. v101123", 21, 50);
 		
 		infoWindow = new TextWindow(2, "info");
 		mainWindow.addChild(infoWindow, 5, 35);
 		
-		commandWindow = new TextWindow(20, "command");
+		commandWindow = new TextWindow(13, "command");
 		mainWindow.addChild(commandWindow, 8, 35);
 		
 		restartGameWindow = new TextWindow(1, 50);
@@ -333,7 +335,13 @@ import Resource;
 		else return false;
 	}
 	
+	public function blankLines(?lines = 8) {
+		for(i in 0...lines) Sys.println("");
+	}
+	
 	public function display() {
+		
+		blankLines();
 		
 		mainWindow.clear();
 		
