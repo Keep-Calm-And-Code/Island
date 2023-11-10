@@ -56,10 +56,12 @@ import Resource;
 		mainWindow = new TextScreen(25);
 		
 		newGameWindow = new TextScreen(25);
-		newGameWindow.write("Island - TiMaSoMo 2023 Version", 9, 26);
+		newGameWindow.write("Island - A game by KeepCalmAndDream", 9, 23);
 		newGameWindow.write("E)asy   island (18 cells)", 12, 28);
 		newGameWindow.write("M)edium island (14 cells)", 14, 28);
 		newGameWindow.write("H)ard   island (12 cells)", 16, 28);
+		
+		newGameWindow.write("for TiMaSoMo 2023. v101123", 24, 50);
 		
 		infoWindow = new TextWindow(2, "info");
 		mainWindow.addChild(infoWindow, 5, 35);

@@ -263,6 +263,8 @@ class HexGrid extends Grid
 		var dy = toCellY(to) - toCellY(from);
 		
 		return Math.acos((dx + dy / 2) / Math.sqrt(distanceSquaredToCell(from, to)));
+		//I'm so concerned about saving one multiplication in the function above, but 
+		//there are more efficient ways to compute/estimate this
 	}
 	
 	public function isLeftOf(to:String, from:String):Null<Bool> {
@@ -301,12 +303,12 @@ class HexGrid extends Grid
 			
 			case DownRight:
 				return dx > 2 * -dy;
-			case UpLeft:	//FIX
+			case UpLeft:	
 				return dx < 2 * -dy;
 				
 			case DownLeft:
 				return (dx + dy) > 2 * dx;
-			case UpRight:	//FIX
+			case UpRight:
 				return (dx + dy) < 2 * dx;
 		}
 
@@ -323,7 +325,7 @@ class HexGrid extends Grid
 		
 		switch(dir) {
 			case Direction.Up:
-				idealAngle = Math.PI * 2.99 / 2; 	//up, but slightly inclined to the left to break ties to the left
+				idealAngle = Math.PI * 1.01 / 2; 	//up, but slightly inclined to the left to break ties to the left
 			case Direction.Down:
 				idealAngle = Math.PI * 0.99 / 2;	//up, but slightly inclined to the right to break ties to the right
 			case Direction.Left:
@@ -332,9 +334,9 @@ class HexGrid extends Grid
 				idealAngle = 0;
 			
 			case Direction.UpLeft:
-				idealAngle = Math.PI * 3.99 / 3;
+				idealAngle = Math.PI * 2.01 / 3;
 			case Direction.UpRight:
-				idealAngle = Math.PI * 5.01 / 3;
+				idealAngle = Math.PI * 0.99 / 3;
 			case Direction.DownLeft:
 				idealAngle = Math.PI * 2.01 / 3;
 			case Direction.DownRight:
@@ -349,16 +351,24 @@ class HexGrid extends Grid
 				if (isInDirectionOf(q, dir, p)) {
 					//q is new closest cell to the left
 					if (closestDistanceSquared == 0 || distanceSquaredToCell(p, q) < closestDistanceSquared) {
+						
 						closestCell = q;
 						closestDistanceSquared = distanceSquaredToCell(p, q);
 						closestAngle = Math.abs((angleToCell(p, q) - idealAngle));
+
+						trace("closer " + q + " " + closestAngle);						
 					}
 					else if (distanceSquaredToCell(p, q) == closestDistanceSquared) {
 						
 						if ( Math.abs((angleToCell(p, q) - idealAngle)) <= closestAngle ) {
+							
 							closestCell = q;
 							closestDistanceSquared = distanceSquaredToCell(p, q);
 							closestAngle = Math.abs((angleToCell(p, q) - idealAngle));
+							
+							trace("ideal angle " + idealAngle);
+							trace("current angle " + angleToCell(p, q));
+							trace("closer angle " + q + " " + closestAngle);
 						}
 					}
 				}
