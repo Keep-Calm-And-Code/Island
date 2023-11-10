@@ -5,7 +5,7 @@
 1. Install gcc; e.g. `sudo apt install gcc`
 2. [Install `haxe` compiler][haxe]; e.g. `sudo apt install haxe`
 3. Setup `haxelib`; e.g. `haxelib setup ~/.local/lib`
-4. Install HashLink library: `haxelib install haxelink`
+4. Install HashLink library: `haxelib install hashlink`
 
 [haxe]: https://haxe.org/download/
 
