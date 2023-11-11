@@ -1,2 +1,2 @@
-haxe  -cp . -hl ./bin/Island.hl -main Main
+haxe -p ./src -hl ./bin/Island.hl -main Main
 pause
