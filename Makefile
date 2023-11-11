@@ -1,5 +1,5 @@
 PLATFORM = linux-amd64
-HL = hashlink-2f8a703-$(PLATFORM)
+HL = hashlink-a502906-$(PLATFORM)
 ARTIFACT = island-$(shell git rev-parse --short HEAD)-$(PLATFORM)
 
 .PHONY: clean package
