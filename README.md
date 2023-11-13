@@ -2,7 +2,7 @@
 
 This repo was created for TiMaSoMo 2023, a month-long event where the tildes.net community makes stuff. I'm making a simple economic strategy game where you develop an island.
 
-Here's the Windows version running via Hashlink: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island/Island.windows.hashlink.zip Unzip to a folder and run Island.bat to play. Hashlink is a VM for Haxe bytecode. There are Linux versions, as well as native, non-VM versions in the releases.
+Here's the Windows version running via Hashlink: https://github.com/Keep-Calm-And-Code/Island/releases/download/Island/Island.windows.hashlink.zip Unzip to a folder and run Island.bat to play. Hashlink is a VM for Haxe bytecode. There are Linux versions, as well as native, non-VM versions in the Releases.
 
 This is written in Haxe. Text-only output, keyboard-only input to keep things code-focused. There are broadly two parts to the project:
 
@@ -13,7 +13,7 @@ The game itself. Build stuff on a hex-grid island which produce stuff so you can
 How to play:
 ------------
 
-Use the number pad with NumLock on to move the active cell.
+Use the number pad with NumLock on to move the active cell. e.g. 6 moves the active cell right, 1 moves the active cell down and to the left.
 
 Press the first letter of an action to perform it. If an action has a cost and you can afford it, it will be prefixed with * e.g. to build a S)awmill, press 's'. You can skip to the Next W)eek to just gain income.
 
@@ -28,9 +28,9 @@ Farms, Sawmills and Mines gain adjacency bonuses when identical buildings are ne
 
 Blacksmiths turn Wood and Metal into Tools, which are needed to upgrade buildings to higher levels.
 
-Temples increase Happiness. Consuming Fish and Goods increases Happiness.
+Temples increase Happiness. Islanders will consume Fish and Goods, increasing Happiness.
 
-Each building that produces stuff requires islanders to work at its Jobs. 1 Job per building level, and 1 population needed per Job. Production falls if there are not enough workers.
+All buildings other than Houses require islanders to work at their Jobs. 1 Job per building level and 1 population needed per Job. Production falls if there are not enough workers.
 
 V)iew population to see more details about Happiness and food consumption.
 
