@@ -1,19 +1,13 @@
-# Building on linux
+# Building on Linux
 
 ## Dependencies
 
-1. Install gcc; e.g. `sudo apt install gcc`
-2. [Install `haxe` compiler][haxe]; e.g. `sudo apt install haxe`
-3. Setup `haxelib`; e.g. `haxelib setup ~/.local/lib`
-4. Install HashLink library: `haxelib install hashlink`
+1. Install the `haxe` compiler: `sudo apt install haxe`
 
-[haxe]: https://haxe.org/download/
+2. Setup `haxelib`, the Haxe package manager. e.g. `haxelib setup`, then press Enter to accept the default directory
 
-## Makefile build
+3. Install `hxcpp`: `haxelib install hxcpp`
 
-1. `make` This downloads runtime dependencies and builds the native application.
-    - Dependencies are placed in `_deps`
-    - Generated C code is placed in `_gen`
-    - The native application is placed in `build`
-2. `make package` Packages the native application into a distributable `.tar.gz`
-    - The package is placed in `dist`
+## Compiling for Linux
+
+Run e.g. `haxe -p ./src -cpp ./bin/Island linux -main Main`
