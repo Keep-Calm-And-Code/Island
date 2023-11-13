@@ -2,7 +2,7 @@
 
 ## Dependencies
 
-1. Install the `haxe` compiler from https://haxe.org/download/
+1. Install the Haxe compiler from https://haxe.org/download/
 
 2. Setup `haxelib`, the Haxe package manager. e.g. from the command line, `haxelib setup` and press Enter to accept the default directory.
 
