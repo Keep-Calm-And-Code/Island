@@ -8,7 +8,7 @@ This is written in Haxe. Text-only output, keyboard-only input to keep things co
 
 A text-windowing module (TextScreen.hx), this is an old personal project that treats the text console as rectangular regions (windows) within rectangular regions, which can then be e.g. moved around, made invisible. This lets me more comfortably render text in specific places rather than simply line-by-line. TextScreen.hx supports displaying colored characters via Jason Hood's ANSICON (https://github.com/adoxa/ansicon). This won't be used for this game.
 
-The game itself. Build stuff on a hex-grid island which produce stuff so you can build more stuff. I'm a hobby coder. My main aim of this project is to try to improve how I go about writing code. In particular, I'm putting this on GitHub to get in the habit of version control and to share it with other people.
+The game itself. Build stuff on a hex-grid island which produce stuff so you can build more stuff. I'm a hobby coder. My main aim of this project is to try to improve how I go about writing code. In particular, I'm putting this on GitHub to get in the habit of version control and to share it with other people. Lots of things I'm figuring out for the first time here, some things may be in a mess or not what you might normally expect in an open-source project on Git, apologies!
 
 How to play:
 ------------

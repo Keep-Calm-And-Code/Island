@@ -1,0 +1,1 @@
+haxe -p .\src -cpp .\bin\Island -main Main
